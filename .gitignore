@@ -5,5 +5,4 @@ __pycache__/
 venv/
 .env
 .DS_Store
-reports/figures/*.png
-reports/predictions/*.csv
+reports/
