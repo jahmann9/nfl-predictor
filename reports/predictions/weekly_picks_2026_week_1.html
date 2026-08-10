@@ -93,15 +93,23 @@ main{max-width:1280px;margin:0 auto;padding:32px 16px}
 .stat-row-footer{display:flex;justify-content:space-between;
   font-size:.65rem;color:#475569;margin-top:2px}
 .no-stats{color:#475569;font-size:.85rem;text-align:center;padding:24px 0}
+.view-toggle-btn{background:#2563eb;border:none;color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;transition:background .2s}
+.view-toggle-btn:hover{background:#1e40af}
+.ou-banner{display:flex;align-items:center;gap:6px}
+body.ou-mode .card .pick-banner{display:none}
+body.ou-mode .card .ou-banner{display:flex}
+body.ou-mode #view-toggle-btn{background:#7c3aed}
+body.ou-mode #view-toggle-btn:hover{background:#6d28d9}
 footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
 </style>
 </head>
 <body>
 <header>
   <div>
-    <h1>&#127944; NFL Spread Predictions</h1>
-    <div class="subtitle">Against the Spread &middot; 2026 Season</div>
+    <h1>&#127944; NFL Predictions</h1>
+    <div class="subtitle"><span id="view-mode-label">Against the Spread</span> &middot; 2026 Season</div>
   </div>
+  <button id="view-toggle-btn" class="view-toggle-btn" onclick="toggleViewMode()">Show O/U</button>
   <div class="badge">EPA &middot; Pace &middot; Rest &middot; ATS Form</div>
 </header>
 <main>
@@ -125,7 +133,7 @@ footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
   <div class="stat-box"><div class="label">Train Games</div><div class="value">2,209</div></div>
 </div>
   <div class="grid">
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(0)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 44.5" data-ou-prob="0.611" onclick="openModal(0)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(0)">
   <div class="card-top">
     <span class="card-date">2026-09-09</span>
@@ -158,6 +166,11 @@ footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
     <span class="pick-text">SEA to cover (-3.5)</span>
     <span class="conf-badge" style="background:#d97706;">Moderate &middot; 60.5%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 44.5">Over 44.5</span>
+    <span class="conf-badge" style="background:#a855f7;">61.1%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -182,7 +195,7 @@ window._matchupData[0] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": 0.0752, "away": -0.0764, "homeColor": "#4A7FC1", "awayColor": "#4A7FC1", "homeBetter": true, "higherBetter": true, "awayTeam": "NE", "homeTeam": "SEA"}, {"label": "Def. EPA Allowed / Play", "home": -0.2633, "away": -0.2735, "homeColor": "#4A7FC1", "awayColor": "#4A7FC1", "homeBetter": false, "higherBetter": false, "awayTeam": "NE", "homeTeam": "SEA"}, {"label": "Avg Point Diff (Last 5)", "home": 16.4, "away": 8.0, "homeColor": "#4A7FC1", "awayColor": "#4A7FC1", "homeBetter": true, "higherBetter": true, "awayTeam": "NE", "homeTeam": "SEA"}, {"label": "ATS Cover Rate (Last 5)", "home": 1.0, "away": 0.6, "homeColor": "#4A7FC1", "awayColor": "#4A7FC1", "homeBetter": true, "higherBetter": true, "awayTeam": "NE", "homeTeam": "SEA"}, {"label": "Avg Pts Scored (Last 5)", "home": 28.2, "away": 21.0, "homeColor": "#4A7FC1", "awayColor": "#4A7FC1", "homeBetter": true, "higherBetter": true, "awayTeam": "NE", "homeTeam": "SEA"}, {"label": "Avg Pts Allowed (Last 5)", "home": 11.8, "away": 13.0, "homeColor": "#4A7FC1", "awayColor": "#4A7FC1", "homeBetter": true, "higherBetter": false, "awayTeam": "NE", "homeTeam": "SEA"}, {"label": "Avg Offensive Plays/Game", "home": 63.4, "away": 61.0, "homeColor": "#4A7FC1", "awayColor": "#4A7FC1", "homeBetter": true, "higherBetter": true, "awayTeam": "NE", "homeTeam": "SEA"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#4A7FC1", "awayColor": "#4A7FC1", "homeBetter": false, "higherBetter": true, "awayTeam": "NE", "homeTeam": "SEA"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(1)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 40.5" data-ou-prob="0.523" onclick="openModal(1)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(1)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -215,6 +228,11 @@ window._matchupData[0] = {
     <span class="pick-text">MIA to cover (+3.5)</span>
     <span class="conf-badge" style="background:#d97706;">Moderate &middot; 59.9%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 40.5">Over 40.5</span>
+    <span class="conf-badge" style="background:#a855f7;">52.3%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -239,7 +257,7 @@ window._matchupData[1] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.2423, "away": -0.0255, "homeColor": "#A8A8A8", "awayColor": "#008E97", "homeBetter": false, "higherBetter": true, "awayTeam": "MIA", "homeTeam": "LV"}, {"label": "Def. EPA Allowed / Play", "home": 0.0027, "away": 0.1075, "homeColor": "#A8A8A8", "awayColor": "#008E97", "homeBetter": true, "higherBetter": false, "awayTeam": "MIA", "homeTeam": "LV"}, {"label": "Avg Point Diff (Last 5)", "home": -12.4, "away": -7.6, "homeColor": "#A8A8A8", "awayColor": "#008E97", "homeBetter": false, "higherBetter": true, "awayTeam": "MIA", "homeTeam": "LV"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.6, "away": 0.4, "homeColor": "#A8A8A8", "awayColor": "#008E97", "homeBetter": true, "higherBetter": true, "awayTeam": "MIA", "homeTeam": "LV"}, {"label": "Avg Pts Scored (Last 5)", "home": 12.4, "away": 20.0, "homeColor": "#A8A8A8", "awayColor": "#008E97", "homeBetter": false, "higherBetter": true, "awayTeam": "MIA", "homeTeam": "LV"}, {"label": "Avg Pts Allowed (Last 5)", "home": 24.8, "away": 27.6, "homeColor": "#A8A8A8", "awayColor": "#008E97", "homeBetter": true, "higherBetter": false, "awayTeam": "MIA", "homeTeam": "LV"}, {"label": "Avg Offensive Plays/Game", "home": 51.4, "away": 55.0, "homeColor": "#A8A8A8", "awayColor": "#008E97", "homeBetter": false, "higherBetter": true, "awayTeam": "MIA", "homeTeam": "LV"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#A8A8A8", "awayColor": "#008E97", "homeBetter": false, "higherBetter": true, "awayTeam": "MIA", "homeTeam": "LV"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(2)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 40.5" data-ou-prob="0.588" onclick="openModal(2)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(2)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -272,6 +290,11 @@ window._matchupData[1] = {
     <span class="pick-text">JAX to cover (-7.5)</span>
     <span class="conf-badge" style="background:#d97706;">Moderate &middot; 58.2%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 40.5">Over 40.5</span>
+    <span class="conf-badge" style="background:#a855f7;">58.8%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -296,7 +319,7 @@ window._matchupData[2] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": 0.1334, "away": -0.1956, "homeColor": "#00A8B5", "awayColor": "#CC5500", "homeBetter": true, "higherBetter": true, "awayTeam": "CLE", "homeTeam": "JAX"}, {"label": "Def. EPA Allowed / Play", "home": -0.1001, "away": -0.0595, "homeColor": "#00A8B5", "awayColor": "#CC5500", "homeBetter": true, "higherBetter": false, "awayTeam": "CLE", "homeTeam": "JAX"}, {"label": "Avg Point Diff (Last 5)", "home": 15.8, "away": -4.8, "homeColor": "#00A8B5", "awayColor": "#CC5500", "homeBetter": true, "higherBetter": true, "awayTeam": "CLE", "homeTeam": "JAX"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.8, "away": 0.6, "homeColor": "#00A8B5", "awayColor": "#CC5500", "homeBetter": true, "higherBetter": true, "awayTeam": "CLE", "homeTeam": "JAX"}, {"label": "Avg Pts Scored (Last 5)", "home": 34.0, "away": 17.0, "homeColor": "#00A8B5", "awayColor": "#CC5500", "homeBetter": true, "higherBetter": true, "awayTeam": "CLE", "homeTeam": "JAX"}, {"label": "Avg Pts Allowed (Last 5)", "home": 18.2, "away": 21.8, "homeColor": "#00A8B5", "awayColor": "#CC5500", "homeBetter": true, "higherBetter": false, "awayTeam": "CLE", "homeTeam": "JAX"}, {"label": "Avg Offensive Plays/Game", "home": 60.2, "away": 57.4, "homeColor": "#00A8B5", "awayColor": "#CC5500", "homeBetter": true, "higherBetter": true, "awayTeam": "CLE", "homeTeam": "JAX"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#00A8B5", "awayColor": "#CC5500", "homeBetter": false, "higherBetter": true, "awayTeam": "CLE", "homeTeam": "JAX"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(3)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 51.5" data-ou-prob="0.516" onclick="openModal(3)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(3)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -329,6 +352,11 @@ window._matchupData[2] = {
     <span class="pick-text">TB to cover (+3.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 57.5%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 51.5">Over 51.5</span>
+    <span class="conf-badge" style="background:#a855f7;">51.6%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -353,7 +381,7 @@ window._matchupData[3] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": 0.0818, "away": 0.0049, "homeColor": "#FB4F14", "awayColor": "#D50A0A", "homeBetter": true, "higherBetter": true, "awayTeam": "TB", "homeTeam": "CIN"}, {"label": "Def. EPA Allowed / Play", "home": 0.0468, "away": 0.0845, "homeColor": "#FB4F14", "awayColor": "#D50A0A", "homeBetter": true, "higherBetter": false, "awayTeam": "TB", "homeTeam": "CIN"}, {"label": "Avg Point Diff (Last 5)", "home": 3.2, "away": -1.8, "homeColor": "#FB4F14", "awayColor": "#D50A0A", "homeBetter": true, "higherBetter": true, "awayTeam": "TB", "homeTeam": "CIN"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.6, "away": 0.0, "homeColor": "#FB4F14", "awayColor": "#D50A0A", "homeBetter": true, "higherBetter": true, "awayTeam": "TB", "homeTeam": "CIN"}, {"label": "Avg Pts Scored (Last 5)", "home": 26.8, "away": 20.2, "homeColor": "#FB4F14", "awayColor": "#D50A0A", "homeBetter": true, "higherBetter": true, "awayTeam": "TB", "homeTeam": "CIN"}, {"label": "Avg Pts Allowed (Last 5)", "home": 23.6, "away": 22.0, "homeColor": "#FB4F14", "awayColor": "#D50A0A", "homeBetter": false, "higherBetter": false, "awayTeam": "TB", "homeTeam": "CIN"}, {"label": "Avg Offensive Plays/Game", "home": 65.2, "away": 64.0, "homeColor": "#FB4F14", "awayColor": "#D50A0A", "homeBetter": true, "higherBetter": true, "awayTeam": "TB", "homeTeam": "CIN"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#FB4F14", "awayColor": "#D50A0A", "homeBetter": false, "higherBetter": true, "awayTeam": "TB", "homeTeam": "CIN"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(4)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 48.5" data-ou-prob="0.526" onclick="openModal(4)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(4)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -386,6 +414,11 @@ window._matchupData[3] = {
     <span class="pick-text">BAL to cover (-3.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 56.2%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 48.5">Over 48.5</span>
+    <span class="conf-badge" style="background:#a855f7;">52.6%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -410,7 +443,7 @@ window._matchupData[4] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.1204, "away": 0.1663, "homeColor": "#4484D6", "awayColor": "#9B59D0", "homeBetter": false, "higherBetter": true, "awayTeam": "BAL", "homeTeam": "IND"}, {"label": "Def. EPA Allowed / Play", "home": 0.0879, "away": 0.0679, "homeColor": "#4484D6", "awayColor": "#9B59D0", "homeBetter": false, "higherBetter": false, "awayTeam": "BAL", "homeTeam": "IND"}, {"label": "Avg Point Diff (Last 5)", "home": -10.8, "away": 6.0, "homeColor": "#4484D6", "awayColor": "#9B59D0", "homeBetter": false, "higherBetter": true, "awayTeam": "BAL", "homeTeam": "IND"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.4, "away": 0.4, "homeColor": "#4484D6", "awayColor": "#9B59D0", "homeBetter": false, "higherBetter": true, "awayTeam": "BAL", "homeTeam": "IND"}, {"label": "Avg Pts Scored (Last 5)", "home": 21.8, "away": 27.0, "homeColor": "#4484D6", "awayColor": "#9B59D0", "homeBetter": false, "higherBetter": true, "awayTeam": "BAL", "homeTeam": "IND"}, {"label": "Avg Pts Allowed (Last 5)", "home": 32.6, "away": 21.0, "homeColor": "#4484D6", "awayColor": "#9B59D0", "homeBetter": false, "higherBetter": false, "awayTeam": "BAL", "homeTeam": "IND"}, {"label": "Avg Offensive Plays/Game", "home": 59.4, "away": 57.0, "homeColor": "#4484D6", "awayColor": "#9B59D0", "homeBetter": true, "higherBetter": true, "awayTeam": "BAL", "homeTeam": "IND"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#4484D6", "awayColor": "#9B59D0", "homeBetter": false, "higherBetter": true, "awayTeam": "BAL", "homeTeam": "IND"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(5)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 46.5" data-ou-prob="0.570" onclick="openModal(5)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(5)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -443,6 +476,11 @@ window._matchupData[4] = {
     <span class="pick-text">LAC to cover (-11.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 55.7%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 46.5">Over 46.5</span>
+    <span class="conf-badge" style="background:#a855f7;">57.0%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -467,7 +505,7 @@ window._matchupData[5] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.0964, "away": -0.0126, "homeColor": "#0080C6", "awayColor": "#97233F", "homeBetter": false, "higherBetter": true, "awayTeam": "ARI", "homeTeam": "LAC"}, {"label": "Def. EPA Allowed / Play", "home": -0.0847, "away": 0.2633, "homeColor": "#0080C6", "awayColor": "#97233F", "homeBetter": true, "higherBetter": false, "awayTeam": "ARI", "homeTeam": "LAC"}, {"label": "Avg Point Diff (Last 5)", "home": -2.6, "away": -19.0, "homeColor": "#0080C6", "awayColor": "#97233F", "homeBetter": true, "higherBetter": true, "awayTeam": "ARI", "homeTeam": "LAC"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.4, "away": 0.0, "homeColor": "#0080C6", "awayColor": "#97233F", "homeBetter": true, "higherBetter": true, "awayTeam": "ARI", "homeTeam": "LAC"}, {"label": "Avg Pts Scored (Last 5)", "home": 14.4, "away": 18.0, "homeColor": "#0080C6", "awayColor": "#97233F", "homeBetter": false, "higherBetter": true, "awayTeam": "ARI", "homeTeam": "LAC"}, {"label": "Avg Pts Allowed (Last 5)", "home": 17.0, "away": 37.0, "homeColor": "#0080C6", "awayColor": "#97233F", "homeBetter": true, "higherBetter": false, "awayTeam": "ARI", "homeTeam": "LAC"}, {"label": "Avg Offensive Plays/Game", "home": 61.2, "away": 57.6, "homeColor": "#0080C6", "awayColor": "#97233F", "homeBetter": true, "higherBetter": true, "awayTeam": "ARI", "homeTeam": "LAC"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#0080C6", "awayColor": "#97233F", "homeBetter": false, "higherBetter": true, "awayTeam": "ARI", "homeTeam": "LAC"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(6)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Under 41.5" data-ou-prob="0.445" onclick="openModal(6)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(6)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -500,6 +538,11 @@ window._matchupData[5] = {
     <span class="pick-text">ATL to cover (+3.0)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 55.4%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Under 41.5">Under 41.5</span>
+    <span class="conf-badge" style="background:#a855f7;">55.5%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -524,7 +567,7 @@ window._matchupData[6] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.051, "away": -0.0436, "homeColor": "#FFB612", "awayColor": "#A71930", "homeBetter": false, "higherBetter": true, "awayTeam": "ATL", "homeTeam": "PIT"}, {"label": "Def. EPA Allowed / Play", "home": 0.0109, "away": -0.0031, "homeColor": "#FFB612", "awayColor": "#A71930", "homeBetter": false, "higherBetter": false, "awayTeam": "ATL", "homeTeam": "PIT"}, {"label": "Avg Point Diff (Last 5)", "home": -2.2, "away": -3.0, "homeColor": "#FFB612", "awayColor": "#A71930", "homeBetter": true, "higherBetter": true, "awayTeam": "ATL", "homeTeam": "PIT"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.6, "away": 0.6, "homeColor": "#FFB612", "awayColor": "#A71930", "homeBetter": false, "higherBetter": true, "awayTeam": "ATL", "homeTeam": "PIT"}, {"label": "Avg Pts Scored (Last 5)", "home": 19.0, "away": 22.0, "homeColor": "#FFB612", "awayColor": "#A71930", "homeBetter": false, "higherBetter": true, "awayTeam": "ATL", "homeTeam": "PIT"}, {"label": "Avg Pts Allowed (Last 5)", "home": 21.2, "away": 25.0, "homeColor": "#FFB612", "awayColor": "#A71930", "homeBetter": true, "higherBetter": false, "awayTeam": "ATL", "homeTeam": "PIT"}, {"label": "Avg Offensive Plays/Game", "home": 64.8, "away": 62.2, "homeColor": "#FFB612", "awayColor": "#A71930", "homeBetter": true, "higherBetter": true, "awayTeam": "ATL", "homeTeam": "PIT"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#FFB612", "awayColor": "#A71930", "homeBetter": false, "higherBetter": true, "awayTeam": "ATL", "homeTeam": "PIT"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(7)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 47.5" data-ou-prob="0.514" onclick="openModal(7)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(7)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -557,6 +600,11 @@ window._matchupData[6] = {
     <span class="pick-text">WAS to cover (+4.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 55.1%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 47.5">Over 47.5</span>
+    <span class="conf-badge" style="background:#a855f7;">51.4%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -581,7 +629,7 @@ window._matchupData[7] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": 0.0544, "away": -0.0767, "homeColor": "#4F9E8F", "awayColor": "#8B3A3A", "homeBetter": true, "higherBetter": true, "awayTeam": "WAS", "homeTeam": "PHI"}, {"label": "Def. EPA Allowed / Play", "home": -0.1154, "away": 0.1458, "homeColor": "#4F9E8F", "awayColor": "#8B3A3A", "homeBetter": true, "higherBetter": false, "awayTeam": "WAS", "homeTeam": "PHI"}, {"label": "Avg Point Diff (Last 5)", "home": 6.4, "away": -6.8, "homeColor": "#4F9E8F", "awayColor": "#8B3A3A", "homeBetter": true, "higherBetter": true, "awayTeam": "WAS", "homeTeam": "PHI"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.6, "away": 0.6, "homeColor": "#4F9E8F", "awayColor": "#8B3A3A", "homeBetter": false, "higherBetter": true, "awayTeam": "WAS", "homeTeam": "PHI"}, {"label": "Avg Pts Scored (Last 5)", "home": 21.8, "away": 18.8, "homeColor": "#4F9E8F", "awayColor": "#8B3A3A", "homeBetter": true, "higherBetter": true, "awayTeam": "WAS", "homeTeam": "PHI"}, {"label": "Avg Pts Allowed (Last 5)", "home": 15.4, "away": 25.6, "homeColor": "#4F9E8F", "awayColor": "#8B3A3A", "homeBetter": true, "higherBetter": false, "awayTeam": "WAS", "homeTeam": "PHI"}, {"label": "Avg Offensive Plays/Game", "home": 63.6, "away": 51.2, "homeColor": "#4F9E8F", "awayColor": "#8B3A3A", "homeBetter": true, "higherBetter": true, "awayTeam": "WAS", "homeTeam": "PHI"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#4F9E8F", "awayColor": "#8B3A3A", "homeBetter": false, "higherBetter": true, "awayTeam": "WAS", "homeTeam": "PHI"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(8)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 38.5" data-ou-prob="0.534" onclick="openModal(8)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(8)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -614,6 +662,11 @@ window._matchupData[7] = {
     <span class="pick-text">TEN to cover (-3.0)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 54.3%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 38.5">Over 38.5</span>
+    <span class="conf-badge" style="background:#a855f7;">53.4%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -638,7 +691,7 @@ window._matchupData[8] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.069, "away": -0.2841, "homeColor": "#4B92DB", "awayColor": "#2EAD76", "homeBetter": true, "higherBetter": true, "awayTeam": "NYJ", "homeTeam": "TEN"}, {"label": "Def. EPA Allowed / Play", "home": 0.0685, "away": 0.2741, "homeColor": "#4B92DB", "awayColor": "#2EAD76", "homeBetter": true, "higherBetter": false, "awayTeam": "NYJ", "homeTeam": "TEN"}, {"label": "Avg Point Diff (Last 5)", "home": -7.2, "away": -26.8, "homeColor": "#4B92DB", "awayColor": "#2EAD76", "homeBetter": true, "higherBetter": true, "awayTeam": "NYJ", "homeTeam": "TEN"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.4, "away": 0.0, "homeColor": "#4B92DB", "awayColor": "#2EAD76", "homeBetter": true, "higherBetter": true, "awayTeam": "NYJ", "homeTeam": "TEN"}, {"label": "Avg Pts Scored (Last 5)", "home": 22.8, "away": 10.8, "homeColor": "#4B92DB", "awayColor": "#2EAD76", "homeBetter": true, "higherBetter": true, "awayTeam": "NYJ", "homeTeam": "TEN"}, {"label": "Avg Pts Allowed (Last 5)", "home": 30.0, "away": 37.6, "homeColor": "#4B92DB", "awayColor": "#2EAD76", "homeBetter": true, "higherBetter": false, "awayTeam": "NYJ", "homeTeam": "TEN"}, {"label": "Avg Offensive Plays/Game", "home": 61.2, "away": 59.6, "homeColor": "#4B92DB", "awayColor": "#2EAD76", "homeBetter": true, "higherBetter": true, "awayTeam": "NYJ", "homeTeam": "TEN"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#4B92DB", "awayColor": "#2EAD76", "homeBetter": false, "higherBetter": true, "awayTeam": "NYJ", "homeTeam": "TEN"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(9)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Under 49.5" data-ou-prob="0.462" onclick="openModal(9)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(9)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -671,6 +724,11 @@ window._matchupData[8] = {
     <span class="pick-text">NO to cover (+7.0)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 53.8%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Under 49.5">Under 49.5</span>
+    <span class="conf-badge" style="background:#a855f7;">53.8%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -695,7 +753,7 @@ window._matchupData[9] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": 0.0542, "away": 0.05, "homeColor": "#0076B6", "awayColor": "#C9A84C", "homeBetter": true, "higherBetter": true, "awayTeam": "NO", "homeTeam": "DET"}, {"label": "Def. EPA Allowed / Play", "home": 0.0198, "away": -0.1707, "homeColor": "#0076B6", "awayColor": "#C9A84C", "homeBetter": false, "higherBetter": false, "awayTeam": "NO", "homeTeam": "DET"}, {"label": "Avg Point Diff (Last 5)", "home": -1.6, "away": 7.2, "homeColor": "#0076B6", "awayColor": "#C9A84C", "homeBetter": false, "higherBetter": true, "awayTeam": "NO", "homeTeam": "DET"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.4, "away": 1.0, "homeColor": "#0076B6", "awayColor": "#C9A84C", "homeBetter": false, "higherBetter": true, "awayTeam": "NO", "homeTeam": "DET"}, {"label": "Avg Pts Scored (Last 5)", "home": 26.2, "away": 24.8, "homeColor": "#0076B6", "awayColor": "#C9A84C", "homeBetter": true, "higherBetter": true, "awayTeam": "NO", "homeTeam": "DET"}, {"label": "Avg Pts Allowed (Last 5)", "home": 27.8, "away": 17.6, "homeColor": "#0076B6", "awayColor": "#C9A84C", "homeBetter": false, "higherBetter": false, "awayTeam": "NO", "homeTeam": "DET"}, {"label": "Avg Offensive Plays/Game", "home": 64.2, "away": 61.4, "homeColor": "#0076B6", "awayColor": "#C9A84C", "homeBetter": true, "higherBetter": true, "awayTeam": "NO", "homeTeam": "DET"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#0076B6", "awayColor": "#C9A84C", "homeBetter": false, "higherBetter": true, "awayTeam": "NO", "homeTeam": "DET"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(10)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 48.5" data-ou-prob="0.570" onclick="openModal(10)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(10)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -728,6 +786,11 @@ window._matchupData[9] = {
     <span class="pick-text">NYG to cover (+2.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 53.5%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 48.5">Over 48.5</span>
+    <span class="conf-badge" style="background:#a855f7;">57.0%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -752,7 +815,7 @@ window._matchupData[10] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.0186, "away": 0.043, "homeColor": "#4A6FBF", "awayColor": "#4189E0", "homeBetter": false, "higherBetter": true, "awayTeam": "DAL", "homeTeam": "NYG"}, {"label": "Def. EPA Allowed / Play", "home": -0.0459, "away": 0.2674, "homeColor": "#4A6FBF", "awayColor": "#4189E0", "homeBetter": true, "higherBetter": false, "awayTeam": "DAL", "homeTeam": "NYG"}, {"label": "Avg Point Diff (Last 5)", "home": 2.4, "away": -9.8, "homeColor": "#4A6FBF", "awayColor": "#4189E0", "homeBetter": true, "higherBetter": true, "awayTeam": "DAL", "homeTeam": "NYG"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.4, "away": 0.0, "homeColor": "#4A6FBF", "awayColor": "#4189E0", "homeBetter": true, "higherBetter": true, "awayTeam": "DAL", "homeTeam": "NYG"}, {"label": "Avg Pts Scored (Last 5)", "home": 23.4, "away": 24.0, "homeColor": "#4A6FBF", "awayColor": "#4189E0", "homeBetter": false, "higherBetter": true, "awayTeam": "DAL", "homeTeam": "NYG"}, {"label": "Avg Pts Allowed (Last 5)", "home": 21.0, "away": 33.8, "homeColor": "#4A6FBF", "awayColor": "#4189E0", "homeBetter": true, "higherBetter": false, "awayTeam": "DAL", "homeTeam": "NYG"}, {"label": "Avg Offensive Plays/Game", "home": 59.8, "away": 68.4, "homeColor": "#4A6FBF", "awayColor": "#4189E0", "homeBetter": false, "higherBetter": true, "awayTeam": "DAL", "homeTeam": "NYG"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#4A6FBF", "awayColor": "#4189E0", "homeBetter": false, "higherBetter": true, "awayTeam": "DAL", "homeTeam": "NYG"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(11)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Under 46.5" data-ou-prob="0.428" onclick="openModal(11)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(11)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -785,6 +848,11 @@ window._matchupData[10] = {
     <span class="pick-text">CHI to cover (-2.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 52.8%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Under 46.5">Under 46.5</span>
+    <span class="conf-badge" style="background:#a855f7;">57.2%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -809,7 +877,7 @@ window._matchupData[11] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.0791, "away": 0.1026, "homeColor": "#0085CA", "awayColor": "#E87722", "homeBetter": false, "higherBetter": true, "awayTeam": "CHI", "homeTeam": "CAR"}, {"label": "Def. EPA Allowed / Play", "home": 0.0561, "away": 0.1492, "homeColor": "#0085CA", "awayColor": "#E87722", "homeBetter": true, "higherBetter": false, "awayTeam": "CHI", "homeTeam": "CAR"}, {"label": "Avg Point Diff (Last 5)", "home": -4.4, "away": 0.0, "homeColor": "#0085CA", "awayColor": "#E87722", "homeBetter": false, "higherBetter": true, "awayTeam": "CHI", "homeTeam": "CAR"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.6, "away": 0.6, "homeColor": "#0085CA", "awayColor": "#E87722", "homeBetter": false, "higherBetter": true, "awayTeam": "CHI", "homeTeam": "CAR"}, {"label": "Avg Pts Scored (Last 5)", "home": 19.0, "away": 24.8, "homeColor": "#0085CA", "awayColor": "#E87722", "homeBetter": false, "higherBetter": true, "awayTeam": "CHI", "homeTeam": "CAR"}, {"label": "Avg Pts Allowed (Last 5)", "home": 23.4, "away": 24.8, "homeColor": "#0085CA", "awayColor": "#E87722", "homeBetter": true, "higherBetter": false, "awayTeam": "CHI", "homeTeam": "CAR"}, {"label": "Avg Offensive Plays/Game", "home": 53.6, "away": 67.2, "homeColor": "#0085CA", "awayColor": "#E87722", "homeBetter": false, "higherBetter": true, "awayTeam": "CHI", "homeTeam": "CAR"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#0085CA", "awayColor": "#E87722", "homeBetter": false, "higherBetter": true, "awayTeam": "CHI", "homeTeam": "CAR"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(12)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Under 44.5" data-ou-prob="0.418" onclick="openModal(12)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(12)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -842,6 +910,11 @@ window._matchupData[11] = {
     <span class="pick-text">BUF to cover (-1.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 52.3%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Under 44.5">Under 44.5</span>
+    <span class="conf-badge" style="background:#a855f7;">58.2%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -866,7 +939,7 @@ window._matchupData[12] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.1295, "away": 0.1244, "homeColor": "#03A4D0", "awayColor": "#00338D", "homeBetter": false, "higherBetter": true, "awayTeam": "BUF", "homeTeam": "HOU"}, {"label": "Def. EPA Allowed / Play", "home": -0.2306, "away": -0.082, "homeColor": "#03A4D0", "awayColor": "#00338D", "homeBetter": true, "higherBetter": false, "awayTeam": "BUF", "homeTeam": "HOU"}, {"label": "Avg Point Diff (Last 5)", "home": 5.2, "away": 5.8, "homeColor": "#03A4D0", "awayColor": "#00338D", "homeBetter": false, "higherBetter": true, "awayTeam": "BUF", "homeTeam": "HOU"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.4, "away": 0.4, "homeColor": "#03A4D0", "awayColor": "#00338D", "homeBetter": false, "higherBetter": true, "awayTeam": "BUF", "homeTeam": "HOU"}, {"label": "Avg Pts Scored (Last 5)", "home": 25.4, "away": 25.4, "homeColor": "#03A4D0", "awayColor": "#00338D", "homeBetter": false, "higherBetter": true, "awayTeam": "BUF", "homeTeam": "HOU"}, {"label": "Avg Pts Allowed (Last 5)", "home": 20.2, "away": 19.6, "homeColor": "#03A4D0", "awayColor": "#00338D", "homeBetter": false, "higherBetter": false, "awayTeam": "BUF", "homeTeam": "HOU"}, {"label": "Avg Offensive Plays/Game", "home": 63.8, "away": 65.8, "homeColor": "#03A4D0", "awayColor": "#00338D", "homeBetter": false, "higherBetter": true, "awayTeam": "BUF", "homeTeam": "HOU"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#03A4D0", "awayColor": "#00338D", "homeBetter": false, "higherBetter": true, "awayTeam": "BUF", "homeTeam": "HOU"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(13)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Under 42.5" data-ou-prob="0.491" onclick="openModal(13)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(13)">
   <div class="card-top">
     <span class="card-date">2026-09-14</span>
@@ -899,6 +972,11 @@ window._matchupData[12] = {
     <span class="pick-text">DEN to cover (+3.0)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 51.9%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Under 42.5">Under 42.5</span>
+    <span class="conf-badge" style="background:#a855f7;">50.9%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -923,7 +1001,7 @@ window._matchupData[13] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": -0.2758, "away": -0.08, "homeColor": "#E31837", "awayColor": "#FB4F14", "homeBetter": false, "higherBetter": true, "awayTeam": "DEN", "homeTeam": "KC"}, {"label": "Def. EPA Allowed / Play", "home": -0.0939, "away": -0.1159, "homeColor": "#E31837", "awayColor": "#FB4F14", "homeBetter": false, "higherBetter": false, "awayTeam": "DEN", "homeTeam": "KC"}, {"label": "Avg Point Diff (Last 5)", "home": -7.8, "away": 1.8, "homeColor": "#E31837", "awayColor": "#FB4F14", "homeBetter": false, "higherBetter": true, "awayTeam": "DEN", "homeTeam": "KC"}, {"label": "ATS Cover Rate (Last 5)", "home": 0.2, "away": 0.6, "homeColor": "#E31837", "awayColor": "#FB4F14", "homeBetter": false, "higherBetter": true, "awayTeam": "DEN", "homeTeam": "KC"}, {"label": "Avg Pts Scored (Last 5)", "home": 11.4, "away": 19.8, "homeColor": "#E31837", "awayColor": "#FB4F14", "homeBetter": false, "higherBetter": true, "awayTeam": "DEN", "homeTeam": "KC"}, {"label": "Avg Pts Allowed (Last 5)", "home": 19.2, "away": 18.0, "homeColor": "#E31837", "awayColor": "#FB4F14", "homeBetter": false, "higherBetter": false, "awayTeam": "DEN", "homeTeam": "KC"}, {"label": "Avg Offensive Plays/Game", "home": 53.6, "away": 63.0, "homeColor": "#E31837", "awayColor": "#FB4F14", "homeBetter": false, "higherBetter": true, "awayTeam": "DEN", "homeTeam": "KC"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#E31837", "awayColor": "#FB4F14", "homeBetter": false, "higherBetter": true, "awayTeam": "DEN", "homeTeam": "KC"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(14)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Over 45.5" data-ou-prob="0.608" onclick="openModal(14)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(14)">
   <div class="card-top">
     <span class="card-date">2026-09-13</span>
@@ -956,6 +1034,11 @@ window._matchupData[13] = {
     <span class="pick-text">GB to cover (-1.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 51.6%</span>
   </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Over 45.5">Over 45.5</span>
+    <span class="conf-badge" style="background:#a855f7;">60.8%</span>
+  </div>
   
   
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
@@ -980,7 +1063,7 @@ window._matchupData[14] = {
   stats: [{"label": "Off. EPA / Play (Last 5)", "home": 0.0318, "away": 0.0165, "homeColor": "#7B52B9", "awayColor": "#4A8C3F", "homeBetter": true, "higherBetter": true, "awayTeam": "GB", "homeTeam": "MIN"}, {"label": "Def. EPA Allowed / Play", "home": -0.2985, "away": 0.1389, "homeColor": "#7B52B9", "awayColor": "#4A8C3F", "homeBetter": true, "higherBetter": false, "awayTeam": "GB", "homeTeam": "MIN"}, {"label": "Avg Point Diff (Last 5)", "home": 13.6, "away": -9.6, "homeColor": "#7B52B9", "awayColor": "#4A8C3F", "homeBetter": true, "higherBetter": true, "awayTeam": "GB", "homeTeam": "MIN"}, {"label": "ATS Cover Rate (Last 5)", "home": 1.0, "away": 0.0, "homeColor": "#7B52B9", "awayColor": "#4A8C3F", "homeBetter": true, "higherBetter": true, "awayTeam": "GB", "homeTeam": "MIN"}, {"label": "Avg Pts Scored (Last 5)", "home": 24.0, "away": 19.2, "homeColor": "#7B52B9", "awayColor": "#4A8C3F", "homeBetter": true, "higherBetter": true, "awayTeam": "GB", "homeTeam": "MIN"}, {"label": "Avg Pts Allowed (Last 5)", "home": 10.4, "away": 28.8, "homeColor": "#7B52B9", "awayColor": "#4A8C3F", "homeBetter": true, "higherBetter": false, "awayTeam": "GB", "homeTeam": "MIN"}, {"label": "Avg Offensive Plays/Game", "home": 55.6, "away": 58.6, "homeColor": "#7B52B9", "awayColor": "#4A8C3F", "homeBetter": false, "higherBetter": true, "awayTeam": "GB", "homeTeam": "MIN"}, {"label": "Days of Rest", "home": 7.0, "away": 7.0, "homeColor": "#7B52B9", "awayColor": "#4A8C3F", "homeBetter": false, "higherBetter": true, "awayTeam": "GB", "homeTeam": "MIN"}]
 };</script>
 
-<div class="card" data-week="1" data-correct="-1" data-high-conf="0" onclick="openModal(15)" role="button" tabindex="0"
+<div class="card" data-week="1" data-correct="-1" data-high-conf="0" data-ou-pick="Under 48.5" data-ou-prob="0.444" onclick="openModal(15)" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal(15)">
   <div class="card-top">
     <span class="card-date">2026-09-10</span>
@@ -1012,6 +1095,11 @@ window._matchupData[14] = {
     <span class="pick-label">PICK</span>
     <span class="pick-text">SF to cover (+3.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 51.0%</span>
+  </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="Under 48.5">Under 48.5</span>
+    <span class="conf-badge" style="background:#a855f7;">55.6%</span>
   </div>
   
   

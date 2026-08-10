@@ -140,13 +140,17 @@ def _card_html(idx: int, row: pd.Series) -> str:
     home_hl = "box-shadow:inset -4px 0 0 #f59e0b;" if pick_is_home else ""
 
     stats_js = _stat_rows_js(row, home, away)
+    
+    # O/U data
+    ou_pick = str(row.get("ou_pick", ""))
+    prob_total_over = _safe(row, "pred_prob_total_over")
 
     # Store correctness and high confidence status for filtering
     is_high_conf = max(prob_home, prob_away) >= 0.70
     was_correct = 1 if row.get("was_correct") else 0 if has_result else -1  # -1 = no result yet
     
     return f"""
-<div class="card" data-week="{int(float(row.get('week', 0)))}" data-correct="{was_correct}" data-high-conf="{int(is_high_conf)}" onclick="openModal({idx})" role="button" tabindex="0"
+<div class="card" data-week="{int(float(row.get('week', 0)))}" data-correct="{was_correct}" data-high-conf="{int(is_high_conf)}" data-ou-pick="{ou_pick}" data-ou-prob="{prob_total_over:.3f}" onclick="openModal({idx})" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal({idx})">
   <div class="card-top">
     <span class="card-date">{gameday}</span>
@@ -178,6 +182,11 @@ def _card_html(idx: int, row: pd.Series) -> str:
     <span class="pick-label">PICK</span>
     <span class="pick-text">{pick}</span>
     <span class="conf-badge" style="background:{conf_color};">{conf_label} &middot; {_pct(pick_prob)}</span>
+  </div>
+  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
+    <span class="pick-label">O/U</span>
+    <span class="pick-text" data-ou-text="{ou_pick}">{ou_pick}</span>
+    <span class="conf-badge" style="background:#a855f7;">{_pct(max(prob_total_over, 1.0 - prob_total_over)) if prob_total_over == prob_total_over else 'N/A'}</span>
   </div>
   {f'<div class="result-banner"><span class="result-chip" style="background:{result_color};">{result_label}</span><span class="result-text">{actual_result}</span></div>' if has_result else ''}
   {f'<div class="score-row">{score_line}</div>' if has_scores else ''}
@@ -296,6 +305,13 @@ main{max-width:1280px;margin:0 auto;padding:32px 16px}
 .stat-row-footer{display:flex;justify-content:space-between;
   font-size:.65rem;color:#475569;margin-top:2px}
 .no-stats{color:#475569;font-size:.85rem;text-align:center;padding:24px 0}
+.view-toggle-btn{background:#2563eb;border:none;color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;transition:background .2s}
+.view-toggle-btn:hover{background:#1e40af}
+.ou-banner{display:flex;align-items:center;gap:6px}
+body.ou-mode .card .pick-banner{display:none}
+body.ou-mode .card .ou-banner{display:flex}
+body.ou-mode #view-toggle-btn{background:#7c3aed}
+body.ou-mode #view-toggle-btn:hover{background:#6d28d9}
 footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
 """
 
@@ -530,9 +546,10 @@ def generate_weekly_html(
 <body>
 <header>
   <div>
-    <h1>&#127944; NFL Spread Predictions</h1>
-    <div class="subtitle">Against the Spread &middot; {season} Season</div>
+    <h1>&#127944; NFL Predictions</h1>
+    <div class="subtitle"><span id="view-mode-label">Against the Spread</span> &middot; {season} Season</div>
   </div>
+  <button id="view-toggle-btn" class="view-toggle-btn" onclick="toggleViewMode()">Show O/U</button>
   <div class="badge">EPA &middot; Pace &middot; Rest &middot; ATS Form</div>
 </header>
 <main>
