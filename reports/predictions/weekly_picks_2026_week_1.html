@@ -97,7 +97,7 @@ main{max-width:1280px;margin:0 auto;padding:32px 16px}
 .view-toggle-btn:hover{background:#1e40af}
 .ou-banner{display:flex;align-items:center;gap:6px}
 body.ou-mode .card .pick-banner{display:none}
-body.ou-mode .card .ou-banner{display:flex}
+body.ou-mode .card .ou-banner{display:flex!important}
 body.ou-mode #view-toggle-btn{background:#7c3aed}
 body.ou-mode #view-toggle-btn:hover{background:#6d28d9}
 footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
@@ -166,10 +166,20 @@ footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
     <span class="pick-text">SEA to cover (-3.5)</span>
     <span class="conf-badge" style="background:#d97706;">Moderate &middot; 60.5%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 44.5">Over 44.5</span>
-    <span class="conf-badge" style="background:#a855f7;">61.1%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 44.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">61.1%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">38.9%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 44.5</div>
+    
   </div>
   
   
@@ -228,10 +238,20 @@ window._matchupData[0] = {
     <span class="pick-text">MIA to cover (+3.5)</span>
     <span class="conf-badge" style="background:#d97706;">Moderate &middot; 59.9%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 40.5">Over 40.5</span>
-    <span class="conf-badge" style="background:#a855f7;">52.3%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 40.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">52.3%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">47.7%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 40.5</div>
+    
   </div>
   
   
@@ -290,10 +310,20 @@ window._matchupData[1] = {
     <span class="pick-text">JAX to cover (-7.5)</span>
     <span class="conf-badge" style="background:#d97706;">Moderate &middot; 58.2%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 40.5">Over 40.5</span>
-    <span class="conf-badge" style="background:#a855f7;">58.8%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 40.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">58.8%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">41.2%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 40.5</div>
+    
   </div>
   
   
@@ -352,10 +382,20 @@ window._matchupData[2] = {
     <span class="pick-text">TB to cover (+3.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 57.5%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 51.5">Over 51.5</span>
-    <span class="conf-badge" style="background:#a855f7;">51.6%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 51.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">51.6%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">48.4%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 51.5</div>
+    
   </div>
   
   
@@ -414,10 +454,20 @@ window._matchupData[3] = {
     <span class="pick-text">BAL to cover (-3.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 56.2%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 48.5">Over 48.5</span>
-    <span class="conf-badge" style="background:#a855f7;">52.6%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 48.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">52.6%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">47.4%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 48.5</div>
+    
   </div>
   
   
@@ -476,10 +526,20 @@ window._matchupData[4] = {
     <span class="pick-text">LAC to cover (-11.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 55.7%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 46.5">Over 46.5</span>
-    <span class="conf-badge" style="background:#a855f7;">57.0%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 46.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">57.0%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">43.0%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 46.5</div>
+    
   </div>
   
   
@@ -538,10 +598,20 @@ window._matchupData[5] = {
     <span class="pick-text">ATL to cover (+3.0)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 55.4%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Under 41.5">Under 41.5</span>
-    <span class="conf-badge" style="background:#a855f7;">55.5%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 41.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">44.5%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">55.5%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Under 41.5</div>
+    
   </div>
   
   
@@ -600,10 +670,20 @@ window._matchupData[6] = {
     <span class="pick-text">WAS to cover (+4.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 55.1%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 47.5">Over 47.5</span>
-    <span class="conf-badge" style="background:#a855f7;">51.4%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 47.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">51.4%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">48.6%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 47.5</div>
+    
   </div>
   
   
@@ -662,10 +742,20 @@ window._matchupData[7] = {
     <span class="pick-text">TEN to cover (-3.0)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 54.3%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 38.5">Over 38.5</span>
-    <span class="conf-badge" style="background:#a855f7;">53.4%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 38.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">53.4%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">46.6%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 38.5</div>
+    
   </div>
   
   
@@ -724,10 +814,20 @@ window._matchupData[8] = {
     <span class="pick-text">NO to cover (+7.0)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 53.8%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Under 49.5">Under 49.5</span>
-    <span class="conf-badge" style="background:#a855f7;">53.8%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 49.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">46.2%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">53.8%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Under 49.5</div>
+    
   </div>
   
   
@@ -786,10 +886,20 @@ window._matchupData[9] = {
     <span class="pick-text">NYG to cover (+2.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 53.5%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 48.5">Over 48.5</span>
-    <span class="conf-badge" style="background:#a855f7;">57.0%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 48.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">57.0%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">43.0%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 48.5</div>
+    
   </div>
   
   
@@ -848,10 +958,20 @@ window._matchupData[10] = {
     <span class="pick-text">CHI to cover (-2.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 52.8%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Under 46.5">Under 46.5</span>
-    <span class="conf-badge" style="background:#a855f7;">57.2%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 46.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">42.8%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">57.2%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Under 46.5</div>
+    
   </div>
   
   
@@ -910,10 +1030,20 @@ window._matchupData[11] = {
     <span class="pick-text">BUF to cover (-1.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 52.3%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Under 44.5">Under 44.5</span>
-    <span class="conf-badge" style="background:#a855f7;">58.2%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 44.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">41.8%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">58.2%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Under 44.5</div>
+    
   </div>
   
   
@@ -972,10 +1102,20 @@ window._matchupData[12] = {
     <span class="pick-text">DEN to cover (+3.0)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 51.9%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Under 42.5">Under 42.5</span>
-    <span class="conf-badge" style="background:#a855f7;">50.9%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 42.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">49.1%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">50.9%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Under 42.5</div>
+    
   </div>
   
   
@@ -1034,10 +1174,20 @@ window._matchupData[13] = {
     <span class="pick-text">GB to cover (-1.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 51.6%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Over 45.5">Over 45.5</span>
-    <span class="conf-badge" style="background:#a855f7;">60.8%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 45.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">60.8%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">39.2%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Over 45.5</div>
+    
   </div>
   
   
@@ -1096,10 +1246,20 @@ window._matchupData[14] = {
     <span class="pick-text">SF to cover (+3.5)</span>
     <span class="conf-badge" style="background:#6b7280;">Lean &middot; 51.0%</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="Under 48.5">Under 48.5</span>
-    <span class="conf-badge" style="background:#a855f7;">55.6%</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U 48.5</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">44.4%</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">55.6%</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">Under 48.5</div>
+    
   </div>
   
   

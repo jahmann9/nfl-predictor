@@ -144,6 +144,22 @@ def _card_html(idx: int, row: pd.Series) -> str:
     # O/U data
     ou_pick = str(row.get("ou_pick", ""))
     prob_total_over = _safe(row, "pred_prob_total_over")
+    prob_total_under = 1.0 - prob_total_over if prob_total_over == prob_total_over else float("nan")
+    total_display = f"{total:.1f}" if total == total else "N/A"
+    
+    # O/U result for historical games
+    has_ou_result = "was_correct_ou" in row.index and pd.notna(row.get("was_correct_ou"))
+    ou_result_label = ""
+    ou_result_color = ""
+    ou_actual_result = ""
+    ou_result_html = ""
+    if has_ou_result:
+      actual_over = bool(row.get("actual_total_over"))
+      ou_correct = bool(row.get("was_correct_ou"))
+      ou_result_label = "Correct" if ou_correct else "Incorrect"
+      ou_result_color = "#1a7f37" if ou_correct else "#b42318"
+      ou_actual_result = "Over Hit" if actual_over else "Under Hit"
+      ou_result_html = f'<div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.1); font-size:.65rem; color:#10b981; text-align:center;"><span style="background:{ou_result_color}; padding:2px 8px; border-radius:4px; color:#fff; font-weight:700;">{ou_result_label}</span> &ndash; {ou_actual_result}</div>'
 
     # Store correctness and high confidence status for filtering
     is_high_conf = max(prob_home, prob_away) >= 0.70
@@ -183,10 +199,20 @@ def _card_html(idx: int, row: pd.Series) -> str:
     <span class="pick-text">{pick}</span>
     <span class="conf-badge" style="background:{conf_color};">{conf_label} &middot; {_pct(pick_prob)}</span>
   </div>
-  <div class="ou-banner" style="background:#7c3aed; display:none; font-size:.75rem; padding:6px 12px; gap:6px;">
-    <span class="pick-label">O/U</span>
-    <span class="pick-text" data-ou-text="{ou_pick}">{ou_pick}</span>
-    <span class="conf-badge" style="background:#a855f7;">{_pct(max(prob_total_over, 1.0 - prob_total_over)) if prob_total_over == prob_total_over else 'N/A'}</span>
+  <div class="ou-banner" style="background:#7c3aed; display:none; padding:12px;">
+    <div style="font-size:.7rem; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">O/U {total_display}</div>
+    <div style="display:flex; gap:8px; margin-bottom:6px;">
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">OVER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">{_pct(prob_total_over) if prob_total_over == prob_total_over else 'N/A'}</div>
+      </div>
+      <div style="flex:1; text-align:center; background:rgba(255,255,255,0.1); padding:6px 8px; border-radius:6px;">
+        <div style="font-size:.65rem; color:#c4b5fd;">UNDER</div>
+        <div style="font-size:.85rem; font-weight:700; color:#fff;">{_pct(prob_total_under) if prob_total_under == prob_total_under else 'N/A'}</div>
+      </div>
+    </div>
+    <div style="font-size:.65rem; color:#d1d5db; text-align:center;">{ou_pick}</div>
+    {ou_result_html}
   </div>
   {f'<div class="result-banner"><span class="result-chip" style="background:{result_color};">{result_label}</span><span class="result-text">{actual_result}</span></div>' if has_result else ''}
   {f'<div class="score-row">{score_line}</div>' if has_scores else ''}
@@ -309,7 +335,7 @@ main{max-width:1280px;margin:0 auto;padding:32px 16px}
 .view-toggle-btn:hover{background:#1e40af}
 .ou-banner{display:flex;align-items:center;gap:6px}
 body.ou-mode .card .pick-banner{display:none}
-body.ou-mode .card .ou-banner{display:flex}
+body.ou-mode .card .ou-banner{display:flex!important}
 body.ou-mode #view-toggle-btn{background:#7c3aed}
 body.ou-mode #view-toggle-btn:hover{background:#6d28d9}
 footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
