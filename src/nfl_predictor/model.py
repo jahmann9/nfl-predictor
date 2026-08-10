@@ -70,14 +70,15 @@ def train_and_evaluate(
     numeric_features: list[str],
     categorical_features: list[str],
     random_state: int,
+    target: str = "home_covers",
 ) -> ModelArtifacts:
     train_df, test_df = temporal_split(df)
 
     features = [*numeric_features, *categorical_features]
     X_train = train_df[features]
-    y_train = train_df["home_covers"].astype(int)
+    y_train = train_df[target].astype(int)
     X_test = test_df[features]
-    y_test = test_df["home_covers"].astype(int)
+    y_test = test_df[target].astype(int)
 
     pipeline = _build_pipeline(numeric_features, categorical_features, random_state=random_state)
     pipeline.fit(X_train, y_train)
@@ -103,8 +104,8 @@ def train_and_evaluate(
     metrics["tp"] = float(confusion[1, 1])
 
     test_predictions = test_df.copy()
-    test_predictions["pred_home_covers"] = test_pred
-    test_predictions["pred_prob_home_covers"] = test_prob
+    test_predictions[f"pred_{target}"] = test_pred
+    test_predictions[f"pred_prob_{target}"] = test_prob
 
     preprocessor = pipeline.named_steps["preprocessor"]
     model = pipeline.named_steps["model"]
@@ -127,8 +128,9 @@ def fit_full_model(
     numeric_features: list[str],
     categorical_features: list[str],
     random_state: int,
+    target: str = "home_covers",
 ) -> Pipeline:
     features = [*numeric_features, *categorical_features]
     pipeline = _build_pipeline(numeric_features, categorical_features, random_state=random_state)
-    pipeline.fit(df[features], df["home_covers"].astype(int))
+    pipeline.fit(df[features], df[target].astype(int))
     return pipeline

@@ -14,7 +14,7 @@ sns.set_theme(style="whitegrid")
 
 def ensure_dirs(output_dir: Path) -> tuple[Path, Path]:
     fig_dir = output_dir / "figures"
-    pred_dir = output_dir / "predictions"
+    pred_dir = output_dir / "summaries"
     fig_dir.mkdir(parents=True, exist_ok=True)
     pred_dir.mkdir(parents=True, exist_ok=True)
     return fig_dir, pred_dir
