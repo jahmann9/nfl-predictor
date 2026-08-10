@@ -17974,6 +17974,20 @@ function filterWeek() {
   var note = document.getElementById('filter-note');
   if (note) note.textContent = val === 'all' ? ('Showing all weeks · ' + visible + ' matchups') : ('Showing week ' + val + ' · ' + visible + ' matchups');
 }
+function toggleViewMode() {
+  var isSpread = !document.body.classList.contains('ou-mode');
+  var btn = document.getElementById('view-toggle-btn');
+  var label = document.getElementById('view-mode-label');
+  if (isSpread) {
+    document.body.classList.add('ou-mode');
+    btn.textContent = 'Show Spread';
+    label.textContent = 'Over/Under';
+  } else {
+    document.body.classList.remove('ou-mode');
+    btn.textContent = 'Show O/U';
+    label.textContent = 'Against the Spread';
+  }
+}
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 </script>
 </body>
