@@ -63,12 +63,12 @@ def _safe(row: pd.Series, col: str, default: float = float("nan")) -> float:
 # ── Detail stat configuration ─────────────────────────────────────────────────
 # Each entry: (label, home_col, away_col, higher_is_better)
 _STAT_DEFS: list[tuple[str, str, str, bool]] = [
-    ("Off. EPA / Play (last N)",   "home_off_epa_last_n",          "away_off_epa_last_n",          True),
+    ("Off. EPA / Play (Last 5)",   "home_off_epa_last_n",          "away_off_epa_last_n",          True),
     ("Def. EPA Allowed / Play",    "home_def_epa_allowed_last_n",  "away_def_epa_allowed_last_n",  False),
-    ("Avg Point Diff (last N)",    "home_point_diff_last_n",       "away_point_diff_last_n",       True),
-    ("ATS Cover Rate (last N)",    "home_ats_rate_last_n",         "away_ats_rate_last_n",         True),
-    ("Avg Pts Scored (last N)",    "home_score_for_last_n",        "away_score_for_last_n",        True),
-    ("Avg Pts Allowed (last N)",   "home_score_against_last_n",    "away_score_against_last_n",    False),
+    ("Avg Point Diff (Last 5)",    "home_point_diff_last_n",       "away_point_diff_last_n",       True),
+    ("ATS Cover Rate (Last 5)",    "home_ats_rate_last_n",         "away_ats_rate_last_n",         True),
+    ("Avg Pts Scored (Last 5)",    "home_score_for_last_n",        "away_score_for_last_n",        True),
+    ("Avg Pts Allowed (Last 5)",   "home_score_against_last_n",    "away_score_against_last_n",    False),
     ("Avg Offensive Plays/Game",   "home_pace_plays_last_n",       "away_pace_plays_last_n",       True),
     ("Days of Rest",               "home_rest",                    "away_rest",                    True),
 ]
@@ -110,6 +110,23 @@ def _card_html(idx: int, row: pd.Series) -> str:
     gameday = str(row.get("gameday", ""))[:10]
     total = _safe(row, "total_line")
     total_str = f"O/U {total:.1f}" if total == total else ""
+    away_score = row.get("away_score")
+    home_score = row.get("home_score")
+    has_scores = pd.notna(away_score) and pd.notna(home_score)
+    score_line = (
+        f"Final: {away} {int(float(away_score))} - {home} {int(float(home_score))}"
+        if has_scores
+        else ""
+    )
+    has_result = "was_correct" in row.index and pd.notna(row.get("was_correct"))
+
+    result_label = ""
+    result_color = ""
+    actual_result = row.get("actual_result", "") if has_result else ""
+    if has_result:
+      correct = bool(row.get("was_correct"))
+      result_label = "Correct" if correct else "Incorrect"
+      result_color = "#1a7f37" if correct else "#b42318"
 
     pick_is_home = prob_home >= 0.5
     pick_prob = prob_home if pick_is_home else prob_away
@@ -124,8 +141,12 @@ def _card_html(idx: int, row: pd.Series) -> str:
 
     stats_js = _stat_rows_js(row, home, away)
 
+    # Store correctness and high confidence status for filtering
+    is_high_conf = max(prob_home, prob_away) >= 0.70
+    was_correct = 1 if row.get("was_correct") else 0 if has_result else -1  # -1 = no result yet
+    
     return f"""
-<div class="card" onclick="openModal({idx})" role="button" tabindex="0"
+<div class="card" data-week="{int(float(row.get('week', 0)))}" data-correct="{was_correct}" data-high-conf="{int(is_high_conf)}" onclick="openModal({idx})" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal({idx})">
   <div class="card-top">
     <span class="card-date">{gameday}</span>
@@ -158,6 +179,8 @@ def _card_html(idx: int, row: pd.Series) -> str:
     <span class="pick-text">{pick}</span>
     <span class="conf-badge" style="background:{conf_color};">{conf_label} &middot; {_pct(pick_prob)}</span>
   </div>
+  {f'<div class="result-banner"><span class="result-chip" style="background:{result_color};">{result_label}</span><span class="result-text">{actual_result}</span></div>' if has_result else ''}
+  {f'<div class="score-row">{score_line}</div>' if has_scores else ''}
   <div class="click-hint">Click for detailed stats &rsaquo;</div>
 </div>
 <script>window._matchupData = window._matchupData || {{}};
@@ -170,6 +193,13 @@ window._matchupData[{idx}] = {{
   awayLogo: "{_logo(away)}", homeLogo: "{_logo(home)}",
   awayColor: "{_color(away)}", homeColor: "{_color(home)}",
   gameday: "{gameday}", total: {json.dumps(total_str)},
+  week: {int(float(row.get('week', 0)))},
+  hasScores: {str(bool(has_scores)).lower()},
+  scoreLine: {json.dumps(score_line)},
+  hasResult: {str(bool(has_result)).lower()},
+  resultLabel: {json.dumps(result_label)},
+  resultColor: {json.dumps(result_color)},
+  actualResult: {json.dumps(str(actual_result))},
   stats: {stats_js}
 }};</script>
 """
@@ -189,6 +219,10 @@ header .subtitle{font-size:.95rem;color:#94a3b8;margin-top:4px}
 .badge{background:#2563eb;color:#fff;border-radius:999px;padding:4px 14px;
   font-size:.78rem;font-weight:700;letter-spacing:.05em;margin-left:auto}
 main{max-width:1280px;margin:0 auto;padding:32px 16px}
+.filter-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 18px;flex-wrap:wrap}
+.filter-label{font-size:.75rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em}
+.filter-select{background:#1a1a2e;border:1px solid #334155;color:#e2e8f0;border-radius:10px;padding:8px 10px;font-weight:700}
+.filter-note{font-size:.72rem;color:#64748b}
 .stats-row{display:flex;gap:16px;margin-bottom:32px;flex-wrap:wrap}
 .stat-box{background:#1a1a2e;border:1px solid #2d2d4e;border-radius:12px;
   padding:16px 24px;flex:1;min-width:140px}
@@ -218,6 +252,10 @@ main{max-width:1280px;margin:0 auto;padding:32px 16px}
 .pick-text{flex:1;font-size:.85rem;font-weight:700;color:#fff}
 .conf-badge{font-size:.63rem;font-weight:700;border-radius:999px;
   padding:2px 10px;color:#fff;white-space:nowrap}
+.result-banner{display:flex;align-items:center;gap:8px;padding:8px 12px 4px;flex-wrap:wrap}
+.result-chip{font-size:.63rem;font-weight:800;border-radius:999px;padding:2px 10px;color:#fff}
+.result-text{font-size:.72rem;color:#cbd5e1;font-weight:600}
+.score-row{font-size:.72rem;color:#e2e8f0;font-weight:700;padding:2px 12px 6px}
 .click-hint{font-size:.65rem;color:#475569;text-align:center;
   padding:6px 0 10px;letter-spacing:.04em}
 /* ── MODAL ── */
@@ -243,6 +281,7 @@ main{max-width:1280px;margin:0 auto;padding:32px 16px}
 .modal-pick-label{font-size:.65rem;font-weight:900;letter-spacing:.1em;
   color:rgba(255,255,255,.6);text-transform:uppercase}
 .modal-pick-text{font-size:.95rem;font-weight:700;color:#fff;flex:1}
+.modal-result-row{padding:10px 24px;border-bottom:1px solid #2d2d4e;display:none;align-items:center;gap:10px}
 .modal-body{padding:20px 24px}
 .section-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;
   text-transform:uppercase;color:#64748b;margin-bottom:16px}
@@ -288,11 +327,25 @@ function openModal(idx) {
   document.getElementById('m-home-spread').style.color = d.homeColor;
   document.getElementById('m-away-prob').textContent = pct(d.awayProb);
   document.getElementById('m-home-prob').textContent = pct(d.homeProb);
-  document.getElementById('m-date').textContent = d.gameday + (d.total ? '  ·  ' + d.total : '');
+  var dateLine = d.gameday + (d.total ? '  ·  ' + d.total : '');
+  if (d.hasScores && d.scoreLine) dateLine += '  ·  ' + d.scoreLine;
+  document.getElementById('m-date').textContent = dateLine;
   document.getElementById('m-pick-row').style.background = d.pickColor;
   document.getElementById('m-pick-text').textContent = d.pick;
   document.getElementById('m-conf-badge').textContent = d.conf + ' · ' + pct(Math.max(d.homeProb, d.awayProb));
   document.getElementById('m-conf-badge').style.background = d.confColor;
+
+  var resultRow = document.getElementById('m-result-row');
+  if (d.hasResult) {
+    resultRow.style.display = 'flex';
+    document.getElementById('m-result-chip').textContent = d.resultLabel;
+    document.getElementById('m-result-chip').style.background = d.resultColor;
+    document.getElementById('m-result-text').textContent = d.actualResult;
+  } else {
+    resultRow.style.display = 'none';
+    document.getElementById('m-result-chip').textContent = '';
+    document.getElementById('m-result-text').textContent = '';
+  }
 
   var container = document.getElementById('m-stats');
   container.innerHTML = '';
@@ -337,6 +390,47 @@ function closeModal() {
   document.getElementById('overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
+function filterWeek() {
+  var sel = document.getElementById('week-filter');
+  if (!sel) return;
+  var val = sel.value;
+  var cards = document.querySelectorAll('.card');
+  var visible = 0;
+  var visibleCorrect = 0;
+  var visibleHighConf = 0;
+  var visibleWithResult = 0;
+  
+  cards.forEach(function(card) {
+    var wk = card.getAttribute('data-week');
+    var show = (val === 'all' || wk === val);
+    card.style.display = show ? '' : 'none';
+    if (show) {
+      visible += 1;
+      var correct = parseInt(card.getAttribute('data-correct') || '-1');
+      var highConf = parseInt(card.getAttribute('data-high-conf') || '0');
+      if (highConf) visibleHighConf += 1;
+      if (correct >= 0) {
+        visibleWithResult += 1;
+        if (correct) visibleCorrect += 1;
+      }
+    }
+  });
+  
+  // Update stats
+  var gamesEl = document.getElementById('stat-games');
+  var highConfEl = document.getElementById('stat-high-conf');
+  var accuracyEl = document.getElementById('stat-accuracy');
+  
+  if (gamesEl) gamesEl.textContent = visible;
+  if (highConfEl) highConfEl.textContent = visibleHighConf;
+  if (accuracyEl) {
+    var acc = visibleWithResult > 0 ? (visibleCorrect / visibleWithResult * 100).toFixed(1) + '%' : 'N/A';
+    accuracyEl.textContent = acc;
+  }
+  
+  var note = document.getElementById('filter-note');
+  if (note) note.textContent = val === 'all' ? ('Showing all weeks · ' + visible + ' matchups') : ('Showing week ' + val + ' · ' + visible + ' matchups');
+}
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 """
 
@@ -369,6 +463,11 @@ _MODAL_HTML = """
       <span class="modal-pick-text" id="m-pick-text"></span>
       <span class="conf-badge" id="m-conf-badge"></span>
     </div>
+    <div class="modal-result-row" id="m-result-row">
+      <span class="modal-pick-label">Outcome</span>
+      <span class="result-chip" id="m-result-chip"></span>
+      <span class="result-text" id="m-result-text"></span>
+    </div>
     <div class="modal-body">
       <div class="section-title">Team Comparison &mdash; Rolling Form</div>
       <div class="stat-compare" id="m-stats"></div>
@@ -397,11 +496,25 @@ def generate_weekly_html(
 
     stats_row = f"""
 <div class="stats-row">
-  <div class="stat-box"><div class="label">Games</div><div class="value">{n_games}</div></div>
-  <div class="stat-box"><div class="label">High Conf.</div><div class="value">{high_conf}</div></div>
-  <div class="stat-box"><div class="label">Accuracy</div><div class="value">{accuracy:.1%}</div></div>
-  <div class="stat-box"><div class="label">ROC AUC</div><div class="value">{roc_auc:.3f}</div></div>
+  <div class="stat-box"><div class="label">Games</div><div class="value" id="stat-games">{n_games}</div></div>
+  <div class="stat-box"><div class="label">High Conf.</div><div class="value" id="stat-high-conf">{high_conf}</div></div>
+  <div class="stat-box"><div class="label">Accuracy</div><div class="value" id="stat-accuracy">{accuracy:.1%}</div></div>
+  <div class="stat-box"><div class="label">ROC AUC</div><div class="value" id="stat-roc-auc">{roc_auc:.3f}</div></div>
   <div class="stat-box"><div class="label">Train Games</div><div class="value">{train_games:,}</div></div>
+</div>"""
+
+    week_values = sorted({int(float(w)) for w in picks["week"].dropna().tolist()}) if "week" in picks.columns else []
+    week_options = "".join([f'<option value="{w}">Week {w}</option>' for w in week_values])
+    filter_html = f"""
+<div class="filter-row">
+  <div>
+    <div class="filter-label">Week Filter</div>
+    <select id="week-filter" class="filter-select" onchange="filterWeek()">
+      <option value="all" selected>All Weeks</option>
+      {week_options}
+    </select>
+  </div>
+  <div id="filter-note" class="filter-note">Showing all weeks · {n_games} matchups</div>
 </div>"""
 
     cards = "".join(_card_html(i, row) for i, (_, row) in enumerate(picks.iterrows()))
@@ -418,11 +531,12 @@ def generate_weekly_html(
 <header>
   <div>
     <h1>&#127944; NFL Spread Predictions</h1>
-    <div class="subtitle">Against the Spread &middot; {season} Season &middot; Week {week}</div>
+    <div class="subtitle">Against the Spread &middot; {season} Season</div>
   </div>
   <div class="badge">EPA &middot; Pace &middot; Rest &middot; ATS Form</div>
 </header>
 <main>
+  {filter_html}
   {stats_row}
   <div class="grid">{cards}</div>
 </main>
