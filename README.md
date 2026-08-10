@@ -1,6 +1,6 @@
-# Weekly NFL Spread Predictor
+# NFL Predictor
 
-A Python application that predicts weekly NFL against-the-spread (ATS) outcomes using the last 10 years of schedule and betting line data.
+A Python application that predicts both NFL against-the-spread (ATS) and over/under outcomes using the last 10 years of schedule and betting line data.
 
 ## Tech Stack
 
@@ -11,10 +11,10 @@ A Python application that predicts weekly NFL against-the-spread (ATS) outcomes 
 
 ## What It Does
 
-1. Downloads the last 10 years of NFL schedules and spreads.
+1. Downloads the last 10 years of NFL schedules, spreads, and totals.
 2. Builds rolling team-form features.
-3. Trains a classification model to predict whether the home team covers.
-4. Produces weekly ATS picks and confidence scores.
+3. Trains classification models to predict whether the home team covers and whether the total goes over.
+4. Produces ATS and O/U picks with confidence scores for completed and upcoming games.
 5. Saves evaluation charts and prediction CSV output.
 
 ## Setup
@@ -37,11 +37,14 @@ Optional arguments:
 
 ```bash
 python main.py --season 2026 --week 1 --training-years 10
+python main.py --season 2026 --training-years 10  # all weeks in season
 ```
 
 ## Outputs
 
-- Weekly picks CSV: `reports/predictions/weekly_picks_<season>_week_<week>.csv`
+- Season/week predictions CSV:
+  - `reports/summaries/season_report_<season>.csv`
+  - `reports/summaries/season_report_<season>_week_<week>.csv`
 - Visualizations in `reports/figures/`:
   - `confusion_matrix.png`
   - `spread_cover_distribution.png`

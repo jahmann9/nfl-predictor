@@ -163,10 +163,12 @@ def _card_html(idx: int, row: pd.Series) -> str:
 
     # Store correctness and high confidence status for filtering
     is_high_conf = max(prob_home, prob_away) >= 0.70
-    was_correct = 1 if row.get("was_correct") else 0 if has_result else -1  # -1 = no result yet
+    is_high_conf_ou = max(prob_total_over, prob_total_under) >= 0.70 if prob_total_over == prob_total_over else False
+    was_correct = 1 if (has_result and bool(row.get("was_correct"))) else 0 if has_result else -1  # -1 = no result yet
+    was_correct_ou = 1 if (has_ou_result and bool(row.get("was_correct_ou"))) else 0 if has_ou_result else -1
     
     return f"""
-<div class="card" data-week="{int(float(row.get('week', 0)))}" data-correct="{was_correct}" data-high-conf="{int(is_high_conf)}" data-ou-pick="{ou_pick}" data-ou-prob="{prob_total_over:.3f}" onclick="openModal({idx})" role="button" tabindex="0"
+<div class="card" data-week="{int(float(row.get('week', 0)))}" data-correct="{was_correct}" data-correct-ou="{was_correct_ou}" data-high-conf="{int(is_high_conf)}" data-high-conf-ou="{int(is_high_conf_ou)}" data-ou-pick="{ou_pick}" data-ou-prob="{prob_total_over:.3f}" onclick="openModal({idx})" role="button" tabindex="0"
      onkeydown="if(event.key==='Enter')openModal({idx})">
   <div class="card-top">
     <span class="card-date">{gameday}</span>
@@ -436,6 +438,9 @@ function filterWeek() {
   var sel = document.getElementById('week-filter');
   if (!sel) return;
   var val = sel.value;
+  var isOuMode = document.body.classList.contains('ou-mode');
+  var correctAttr = isOuMode ? 'data-correct-ou' : 'data-correct';
+  var highConfAttr = isOuMode ? 'data-high-conf-ou' : 'data-high-conf';
   var cards = document.querySelectorAll('.card');
   var visible = 0;
   var visibleCorrect = 0;
@@ -448,8 +453,8 @@ function filterWeek() {
     card.style.display = show ? '' : 'none';
     if (show) {
       visible += 1;
-      var correct = parseInt(card.getAttribute('data-correct') || '-1');
-      var highConf = parseInt(card.getAttribute('data-high-conf') || '0');
+      var correct = parseInt(card.getAttribute(correctAttr) || '-1');
+      var highConf = parseInt(card.getAttribute(highConfAttr) || '0');
       if (highConf) visibleHighConf += 1;
       if (correct >= 0) {
         visibleWithResult += 1;
@@ -466,8 +471,16 @@ function filterWeek() {
   if (gamesEl) gamesEl.textContent = visible;
   if (highConfEl) highConfEl.textContent = visibleHighConf;
   if (accuracyEl) {
-    var acc = visibleWithResult > 0 ? (visibleCorrect / visibleWithResult * 100).toFixed(1) + '%' : 'N/A';
+    var acc = visibleWithResult > 0
+      ? (visibleCorrect / visibleWithResult * 100).toFixed(1) + '%'
+      : 'N/A';
     accuracyEl.textContent = acc;
+  }
+  var rocAucEl = document.getElementById('stat-roc-auc');
+  if (rocAucEl) {
+    var modeRocAttr = isOuMode ? 'data-ou-roc-auc' : 'data-spread-roc-auc';
+    var modeRoc = parseFloat(rocAucEl.getAttribute(modeRocAttr) || 'nan');
+    rocAucEl.textContent = isNaN(modeRoc) ? 'N/A' : modeRoc.toFixed(3);
   }
   
   var note = document.getElementById('filter-note');
@@ -486,7 +499,11 @@ function toggleViewMode() {
     btn.textContent = 'Show O/U';
     label.textContent = 'Against the Spread';
   }
+  filterWeek();
 }
+document.addEventListener('DOMContentLoaded', function() {
+  filterWeek();
+});
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 """
 
@@ -538,24 +555,36 @@ _MODAL_HTML = """
 def generate_weekly_html(
     picks: pd.DataFrame,
     season: int,
-    week: int,
+  week: int | None,
     model_metrics: dict,
+    model_metrics_ou: dict | None,
     output_path: Path,
 ) -> None:
-    accuracy = model_metrics.get("accuracy", float("nan"))
-    roc_auc = model_metrics.get("roc_auc", float("nan"))
+    spread_accuracy = model_metrics.get("accuracy", float("nan"))
+    ou_accuracy = model_metrics_ou.get("accuracy", float("nan")) if model_metrics_ou else float("nan")
+    spread_roc_auc = model_metrics.get("roc_auc", float("nan"))
+    ou_roc_auc = model_metrics_ou.get("roc_auc", float("nan")) if model_metrics_ou else float("nan")
     train_games = int(model_metrics.get("train_games", 0))
     n_games = len(picks)
-    high_conf = int(
+    high_conf_spread = int(
         (picks["pred_prob_home_cover"].apply(lambda p: max(p, 1 - p)) >= 0.70).sum()
     )
+    high_conf_ou = int(
+        (picks["pred_prob_total_over"].apply(lambda p: max(p, 1 - p)) >= 0.70).sum()
+    ) if "pred_prob_total_over" in picks.columns else 0
+
+    def _fmt_pct(v: float) -> str:
+        return f"{v:.1%}" if pd.notna(v) else "N/A"
+
+    def _fmt_roc(v: float) -> str:
+        return f"{v:.3f}" if pd.notna(v) else "N/A"
 
     stats_row = f"""
 <div class="stats-row">
   <div class="stat-box"><div class="label">Games</div><div class="value" id="stat-games">{n_games}</div></div>
-  <div class="stat-box"><div class="label">High Conf.</div><div class="value" id="stat-high-conf">{high_conf}</div></div>
-  <div class="stat-box"><div class="label">Accuracy</div><div class="value" id="stat-accuracy">{accuracy:.1%}</div></div>
-  <div class="stat-box"><div class="label">ROC AUC</div><div class="value" id="stat-roc-auc">{roc_auc:.3f}</div></div>
+  <div class="stat-box"><div class="label">High Conf.</div><div class="value" id="stat-high-conf" data-spread-high-conf="{high_conf_spread}" data-ou-high-conf="{high_conf_ou}">{high_conf_spread}</div></div>
+  <div class="stat-box"><div class="label">Accuracy</div><div class="value" id="stat-accuracy" data-spread-acc="{spread_accuracy}" data-ou-acc="{ou_accuracy}">{_fmt_pct(spread_accuracy)}</div></div>
+  <div class="stat-box"><div class="label">ROC AUC</div><div class="value" id="stat-roc-auc" data-spread-roc-auc="{spread_roc_auc}" data-ou-roc-auc="{ou_roc_auc}">{_fmt_roc(spread_roc_auc)}</div></div>
   <div class="stat-box"><div class="label">Train Games</div><div class="value">{train_games:,}</div></div>
 </div>"""
 
@@ -574,19 +603,20 @@ def generate_weekly_html(
 </div>"""
 
     cards = "".join(_card_html(i, row) for i, (_, row) in enumerate(picks.iterrows()))
+    title_scope = f"Week {week}" if week is not None else "All Weeks"
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>NFL ATS Predictions &middot; {season} Week {week}</title>
+  <title>NFL Predictor &middot; {season} {title_scope}</title>
   <style>{_CSS}</style>
 </head>
 <body>
 <header>
   <div>
-    <h1>&#127944; NFL Predictions</h1>
+    <h1>&#127944; NFL Predictor</h1>
     <div class="subtitle"><span id="view-mode-label">Against the Spread</span> &middot; {season} Season</div>
   </div>
   <button id="view-toggle-btn" class="view-toggle-btn" onclick="toggleViewMode()">Show O/U</button>
@@ -598,7 +628,7 @@ def generate_weekly_html(
   <div class="grid">{cards}</div>
 </main>
 {_MODAL_HTML}
-<footer>Generated by nfl-predictor &middot; Data via nflverse &middot; {train_games:,} training games</footer>
+<footer>Generated by NFL Predictor &middot; Data via nflverse &middot; {train_games:,} training games</footer>
 <script>{_JS}</script>
 </body>
 </html>"""
