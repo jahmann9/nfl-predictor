@@ -10,6 +10,7 @@ from .config import CATEGORICAL_FEATURES, NUMERIC_FEATURES, PredictorConfig
 from .data import load_schedule_data, load_team_pbp_game_features
 from .features import build_model_frame
 from .model import fit_full_model, train_and_evaluate
+from .report import generate_weekly_html
 from .visualize import ensure_dirs, plot_confusion, plot_cover_by_spread, plot_feature_importance, plot_probability_calibration
 
 
@@ -120,24 +121,42 @@ def run() -> None:
             axis=1,
         )
 
-        picks = weekly[
-            [
-                "season",
-                "week",
-                "gameday",
-                "away_team",
-                "home_team",
-                "away_spread_line",
-                "home_spread_line",
-                "pred_prob_home_cover",
-                "pred_home_covers",
-                "recommended_pick",
-            ]
-        ].sort_values("pred_prob_home_cover", ascending=False)
+        # Stat columns for the detail panel – include whatever is available.
+        _detail_stat_cols = [
+            "home_off_epa_last_n", "away_off_epa_last_n",
+            "home_def_epa_allowed_last_n", "away_def_epa_allowed_last_n",
+            "home_pace_plays_last_n", "away_pace_plays_last_n",
+            "home_ats_rate_last_n", "away_ats_rate_last_n",
+            "home_point_diff_last_n", "away_point_diff_last_n",
+            "home_score_for_last_n", "away_score_for_last_n",
+            "home_score_against_last_n", "away_score_against_last_n",
+            "home_rest", "away_rest",
+            "total_line",
+        ]
+        _base_cols = [
+            "season", "week", "gameday",
+            "away_team", "home_team",
+            "away_spread_line", "home_spread_line",
+            "pred_prob_home_cover", "pred_home_covers",
+            "recommended_pick",
+        ]
+        _export_cols = _base_cols + [c for c in _detail_stat_cols if c in weekly.columns]
+        picks = weekly[_export_cols].copy()
+        picks["_pick_prob"] = picks["pred_prob_home_cover"].apply(lambda p: max(p, 1 - p))
+        picks = picks.sort_values("_pick_prob", ascending=False).drop(columns=["_pick_prob"])
 
         out_file = pred_dir / f"weekly_picks_{target_season}_week_{target_week}.csv"
         picks.to_csv(out_file, index=False)
         print(f"Saved weekly predictions to: {out_file}")
+
+        html_file = pred_dir / f"weekly_picks_{target_season}_week_{target_week}.html"
+        generate_weekly_html(
+            picks=picks,
+            season=target_season,
+            week=target_week,
+            model_metrics=artifacts.metrics,
+            output_path=html_file,
+        )
 
     print("\nModel Evaluation")
     print("-" * 40)
