@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 import nflreadpy as nfl
 
 from .config import CATEGORICAL_FEATURES, NUMERIC_FEATURES, PredictorConfig
@@ -71,18 +72,34 @@ def run() -> None:
         & model_df["spread_line"].notna()
     ].copy()
 
+    # For O/U model, also require total_goes_over to be available
+    train_df_ou = train_df[train_df["total_goes_over"].notna()].copy() if "total_goes_over" in train_df.columns else train_df.copy()
+
     if len(train_df) < 200:
         raise ValueError("Not enough historical games found to train a stable model.")
 
     available_numeric = [c for c in NUMERIC_FEATURES if c in train_df.columns]
     available_categorical = [c for c in CATEGORICAL_FEATURES if c in train_df.columns]
 
+    # Train spread model
     artifacts = train_and_evaluate(
         train_df,
         numeric_features=available_numeric,
         categorical_features=available_categorical,
         random_state=config.random_state,
+        target="home_covers",
     )
+
+    # Train O/U model if we have enough data
+    artifacts_ou = None
+    if "total_goes_over" in train_df_ou.columns and len(train_df_ou) >= 200:
+        artifacts_ou = train_and_evaluate(
+            train_df_ou,
+            numeric_features=available_numeric,
+            categorical_features=available_categorical,
+            random_state=config.random_state,
+            target="total_goes_over",
+        )
 
     output_dir = Path(args.output_dir)
     fig_dir, pred_dir = ensure_dirs(output_dir)
@@ -97,7 +114,18 @@ def run() -> None:
         numeric_features=available_numeric,
         categorical_features=available_categorical,
         random_state=config.random_state,
+        target="home_covers",
     )
+
+    full_model_ou = None
+    if artifacts_ou is not None:
+        full_model_ou = fit_full_model(
+            train_df_ou,
+            numeric_features=available_numeric,
+            categorical_features=available_categorical,
+            random_state=config.random_state,
+            target="total_goes_over",
+        )
 
     def _build_export_frame(frame: pd.DataFrame) -> pd.DataFrame:
         # Stat columns for the detail panel – include whatever is available.
@@ -120,14 +148,21 @@ def run() -> None:
             "pred_prob_home_cover", "pred_home_covers",
             "recommended_pick",
         ]
+        _ou_cols = [
+            "pred_prob_total_over", "pred_total_over", "ou_pick",
+        ]
         _review_cols = [
             "actual_home_covers",
             "actual_result",
             "was_correct",
             "home_cover_margin",
+            "actual_total_over",
+            "was_correct_ou",
         ]
 
         cols = _base_cols + [c for c in _detail_stat_cols if c in frame.columns] + [
+            c for c in _ou_cols if c in frame.columns
+        ] + [
             c for c in _review_cols if c in frame.columns
         ]
         picks = frame[cols].copy()
@@ -156,6 +191,7 @@ def run() -> None:
             review["away_spread_line"] = review["spread_line"]
             review["home_spread_line"] = -review["spread_line"]
 
+            # Spread predictions
             probs = full_model.predict_proba(review[feature_cols])[:, 1]
             review["pred_prob_home_cover"] = probs
             review["pred_home_covers"] = (review["pred_prob_home_cover"] >= 0.5).astype(int)
@@ -168,6 +204,15 @@ def run() -> None:
                 ),
                 axis=1,
             )
+
+            # O/U predictions
+            if full_model_ou is not None:
+                ou_probs = full_model_ou.predict_proba(review[feature_cols])[:, 1]
+                review["pred_prob_total_over"] = ou_probs
+                review["pred_total_over"] = (review["pred_prob_total_over"] >= 0.5).astype(int)
+            else:
+                review["pred_prob_total_over"] = 0.5
+                review["pred_total_over"] = 0
 
             review["actual_home_covers"] = (review["home_cover_margin"] > 0).astype(int)
             review["actual_result"] = review.apply(
@@ -182,6 +227,15 @@ def run() -> None:
                 ),
                 axis=1,
             )
+            
+            # O/U actual results
+            if "total_points" in review.columns:
+                review["actual_total_over"] = (review["total_points"] > review["total_line"]).astype(int)
+                review["was_correct_ou"] = review["pred_total_over"] == review["actual_total_over"]
+            else:
+                review["actual_total_over"] = np.nan
+                review["was_correct_ou"] = np.nan
+            
             review["was_correct"] = review["pred_home_covers"] == review["actual_home_covers"]
 
             picks = _build_export_frame(review)
@@ -223,6 +277,7 @@ def run() -> None:
             weekly["away_spread_line"] = weekly["spread_line"]
             weekly["home_spread_line"] = -weekly["spread_line"]
 
+            # Spread predictions
             probs = full_model.predict_proba(weekly[feature_cols])[:, 1]
             weekly["pred_prob_home_cover"] = probs
             weekly["pred_home_covers"] = (weekly["pred_prob_home_cover"] >= 0.5).astype(int)
@@ -235,6 +290,25 @@ def run() -> None:
                 ),
                 axis=1,
             )
+
+            # O/U predictions
+            if full_model_ou is not None:
+                ou_probs = full_model_ou.predict_proba(weekly[feature_cols])[:, 1]
+                weekly["pred_prob_total_over"] = ou_probs
+                weekly["pred_total_over"] = (weekly["pred_prob_total_over"] >= 0.5).astype(int)
+                ou_pick_text = weekly.apply(
+                    lambda row: (
+                        f"Over {float(row['total_line']):.1f}"
+                        if float(row["pred_prob_total_over"]) >= 0.5
+                        else f"Under {float(row['total_line']):.1f}"
+                    ),
+                    axis=1,
+                )
+                weekly["ou_pick"] = ou_pick_text
+            else:
+                weekly["pred_prob_total_over"] = 0.5
+                weekly["pred_total_over"] = 0
+                weekly["ou_pick"] = ""
 
             picks = _build_export_frame(weekly)
 

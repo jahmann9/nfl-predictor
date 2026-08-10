@@ -173,4 +173,12 @@ def build_model_frame(
         np.nan,
     )
 
+    # Over/Under target: 1 if total points go over, 0 if under
+    model_df["total_points"] = model_df["home_score"] + model_df["away_score"]
+    model_df["total_goes_over"] = np.where(
+        model_df["total_points"].notna(),
+        (model_df["total_points"] > model_df["total_line"]).astype(int),
+        np.nan,
+    )
+
     return model_df
