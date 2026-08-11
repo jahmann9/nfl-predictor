@@ -42,7 +42,7 @@
         <div class="row" style="justify-content:space-between;">
           <div>
             <h2 style="margin:0 0 4px 0;">Weekly Pick Editor</h2>
-            <div class="small">Enter one spread or one O/U pick per person. Leave "Made Pick" unchecked to skip.</div>
+            <div class="small">Assign one spread or one O/U pick per person from the generated season report options for the selected week. Leave "Made Pick" unchecked to skip.</div>
           </div>
           <button class="secondary" id="logout-btn">Log Out</button>
         </div>
@@ -85,6 +85,7 @@
     <script>
       var supabaseClient;
       var sessionUser = null;
+      var seasonReportCache = {};
 
       function weekOptions() {
         var sel = document.getElementById("week-select");
@@ -97,7 +98,126 @@
         }
       }
 
-      function renderRows(existing) {
+      function parseCsvLine(line) {
+        var out = [];
+        var cur = "";
+        var inQuotes = false;
+        for (var i = 0; i < line.length; i += 1) {
+          var ch = line[i];
+          if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') {
+              cur += '"';
+              i += 1;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (ch === "," && !inQuotes) {
+            out.push(cur);
+            cur = "";
+          } else {
+            cur += ch;
+          }
+        }
+        out.push(cur);
+        return out;
+      }
+
+      function parseCsv(text) {
+        var lines = text.replace(/\r/g, "").split("\n").filter(function (l) { return l.trim().length > 0; });
+        if (!lines.length) return [];
+        var header = parseCsvLine(lines[0]);
+        var rows = [];
+        for (var i = 1; i < lines.length; i += 1) {
+          var parts = parseCsvLine(lines[i]);
+          var row = {};
+          for (var c = 0; c < header.length; c += 1) {
+            row[header[c]] = parts[c] !== undefined ? parts[c] : "";
+          }
+          rows.push(row);
+        }
+        return rows;
+      }
+
+      async function getSeasonReportRows(season) {
+        if (seasonReportCache[season]) {
+          return seasonReportCache[season];
+        }
+        var path = "reports/summaries/season_report_" + season + ".csv";
+        var res = await fetch(path, { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("Could not load " + path + " (" + res.status + ")");
+        }
+        var text = await res.text();
+        var rows = parseCsv(text).map(function (r) {
+          r.week = Number(r.week || 0);
+          return r;
+        });
+        seasonReportCache[season] = rows;
+        return rows;
+      }
+
+      async function getPickOptions(season, week, pickType) {
+        var rows = await getSeasonReportRows(season);
+        var weeklyRows = rows.filter(function (r) { return Number(r.week) === Number(week); });
+        var seen = {};
+        var options = [];
+        weeklyRows.forEach(function (r) {
+          var pickText = pickType === "spread" ? (r.recommended_pick || "") : (r.ou_pick || "");
+          if (!pickText) return;
+          var key = pickText;
+          if (seen[key]) return;
+          seen[key] = true;
+          var matchup = (r.away_team || "?") + " @ " + (r.home_team || "?");
+          options.push({ value: pickText, label: matchup + ": " + pickText });
+        });
+        return options;
+      }
+
+      async function refreshPickSelectForPerson(person, preferredValue) {
+        var season = Number(document.getElementById("season-select").value);
+        var week = Number(document.getElementById("week-select").value);
+        var pickTypeEl = valueFor(person, "pick-type");
+        var pickTextEl = valueFor(person, "pick-text");
+        if (!pickTypeEl || !pickTextEl) return;
+        var pickType = pickTypeEl.value;
+
+        var currentValue = preferredValue !== undefined ? preferredValue : pickTextEl.value;
+        pickTextEl.innerHTML = "";
+
+        var emptyOpt = document.createElement("option");
+        emptyOpt.value = "";
+        emptyOpt.textContent = "Select pick from report";
+        pickTextEl.appendChild(emptyOpt);
+
+        try {
+          var options = await getPickOptions(season, week, pickType);
+          options.forEach(function (opt) {
+            var o = document.createElement("option");
+            o.value = opt.value;
+            o.textContent = opt.label;
+            pickTextEl.appendChild(o);
+          });
+        } catch (e) {
+          document.getElementById("save-msg").innerHTML = "<span class='error'>" + e.message + "</span>";
+        }
+
+        if (currentValue && !Array.from(pickTextEl.options).some(function (o) { return o.value === currentValue; })) {
+          var custom = document.createElement("option");
+          custom.value = currentValue;
+          custom.textContent = "Saved pick: " + currentValue;
+          pickTextEl.appendChild(custom);
+        }
+
+        pickTextEl.value = currentValue || "";
+      }
+
+      async function refreshAllPickSelects() {
+        for (var i = 0; i < window.PEOPLE.length; i += 1) {
+          await refreshPickSelectForPerson(window.PEOPLE[i]);
+        }
+      }
+
+      async function renderRows(existing) {
         var tbody = document.getElementById("pick-rows");
         tbody.innerHTML = "";
         var byPerson = {};
@@ -117,7 +237,7 @@
                 "<option value='ou' " + (row && row.pick_type === "ou" ? "selected" : "") + ">Over/Under</option>" +
               "</select>" +
             "</td>" +
-            "<td><input type='text' data-role='pick-text' data-person='" + name + "' placeholder='e.g. BUF -3.5 or Over 47.5' value='" + (row ? (row.pick_text || "") : "") + "' /></td>" +
+            "<td><select data-role='pick-text' data-person='" + name + "'></select></td>" +
             "<td>" +
               "<select data-role='result' data-person='" + name + "'>" +
                 "<option value='pending' " + (!row || row.result === "pending" ? "selected" : "") + ">Pending</option>" +
@@ -127,6 +247,18 @@
             "</td>";
           tbody.appendChild(tr);
         });
+
+        for (var i = 0; i < window.PEOPLE.length; i += 1) {
+          var person = window.PEOPLE[i];
+          var existingRow = byPerson[person] || null;
+          await refreshPickSelectForPerson(person, existingRow ? (existingRow.pick_text || "") : "");
+          var typeEl = valueFor(person, "pick-type");
+          typeEl.addEventListener("change", (function (p) {
+            return function () {
+              refreshPickSelectForPerson(p, "");
+            };
+          })(person));
+        }
       }
 
       async function loadWeek() {
@@ -142,7 +274,7 @@
           document.getElementById("save-msg").innerHTML = "<span class='error'>Load error: " + res.error.message + "</span>";
           return;
         }
-        renderRows(res.data || []);
+        await renderRows(res.data || []);
         document.getElementById("save-msg").innerHTML = "<span class='small'>Loaded picks for season " + season + ", week " + week + ".</span>";
       }
 
@@ -243,6 +375,8 @@
         document.getElementById("logout-btn").addEventListener("click", logout);
         document.getElementById("load-week-btn").addEventListener("click", loadWeek);
         document.getElementById("save-week-btn").addEventListener("click", saveWeek);
+        document.getElementById("season-select").addEventListener("change", loadWeek);
+        document.getElementById("week-select").addEventListener("change", loadWeek);
 
         var session = await supabaseClient.auth.getSession();
         var existing = session.data && session.data.session ? session.data.session.user : null;
