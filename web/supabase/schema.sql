@@ -9,11 +9,36 @@ create table if not exists public.weekly_picks (
   person text not null check (person in ('Jaron', 'Tom', 'Dylan', 'Jordan', 'Jacob')),
   pick_type text not null check (pick_type in ('spread', 'ou')),
   pick_text text not null,
-  result text not null default 'pending' check (result in ('pending', 'hit', 'miss')),
+  result text not null default 'pending' check (result in ('pending', 'hit', 'miss', 'push')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (season, week, person)
 );
+
+-- Migration-safe updates for existing tables.
+alter table public.weekly_picks
+  add column if not exists pick_type text,
+  add column if not exists pick_text text,
+  add column if not exists result text default 'pending',
+  add column if not exists created_at timestamptz default now(),
+  add column if not exists updated_at timestamptz default now();
+
+alter table public.weekly_picks
+  alter column pick_type set not null,
+  alter column pick_text set not null,
+  alter column result set not null,
+  alter column created_at set not null,
+  alter column updated_at set not null;
+
+alter table public.weekly_picks
+  drop constraint if exists weekly_picks_result_check,
+  drop constraint if exists weekly_picks_pick_type_check,
+  drop constraint if exists weekly_picks_person_check;
+
+alter table public.weekly_picks
+  add constraint weekly_picks_result_check check (result in ('pending', 'hit', 'miss', 'push')),
+  add constraint weekly_picks_pick_type_check check (pick_type in ('spread', 'ou')),
+  add constraint weekly_picks_person_check check (person in ('Jaron', 'Tom', 'Dylan', 'Jordan', 'Jacob'));
 
 create or replace function public.set_updated_at()
 returns trigger as $$
