@@ -65,6 +65,7 @@ Each person can have at most one weekly pick (spread or O/U), and they can be le
 ### Supabase setup
 
 1. Create a Supabase project.
+  - Project dashboard: https://supabase.com/dashboard/project/jihwtjbppwimdrcukhba
 2. Run SQL from `web/supabase/schema.sql` in the Supabase SQL editor.
 3. In `web/config.js`, set:
   - `SUPABASE_URL`
