@@ -360,8 +360,8 @@ async function clearWeek() {
 async function logout() {
   await supabaseClient.auth.signOut();
   sessionUser = null;
-  document.getElementById("editor-card").style.display = "none";
-  document.getElementById("login-card").style.display = "block";
+  document.getElementById("editor-card").classList.add("hidden");
+  document.getElementById("login-card").classList.remove("hidden");
 }
 
 async function login() {
@@ -378,8 +378,8 @@ async function login() {
 
   sessionUser = res.data.user;
   msg.innerHTML = "<span class='success'>Logged in.</span>";
-  document.getElementById("login-card").style.display = "none";
-  document.getElementById("editor-card").style.display = "block";
+  document.getElementById("login-card").classList.add("hidden");
+  document.getElementById("editor-card").classList.remove("hidden");
   await loadWeek();
 }
 
@@ -388,7 +388,7 @@ async function boot() {
     supabaseClient = window.createSupabaseClient();
   } catch (e) {
     var warning = document.getElementById("config-warning");
-    warning.style.display = "block";
+    warning.classList.remove("hidden");
     warning.textContent = e.message;
     return;
   }
@@ -411,8 +411,8 @@ async function boot() {
   var existing = session.data && session.data.session ? session.data.session.user : null;
   if (existing) {
     sessionUser = existing;
-    document.getElementById("login-card").style.display = "none";
-    document.getElementById("editor-card").style.display = "block";
+    document.getElementById("login-card").classList.add("hidden");
+    document.getElementById("editor-card").classList.remove("hidden");
     await weekOptionsFromReport(Number(document.getElementById("season-select").value));
     await loadWeek();
   }

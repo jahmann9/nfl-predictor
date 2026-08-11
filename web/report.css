@@ -100,3 +100,61 @@ body.ou-mode .card .ou-banner{display:flex!important}
 body.ou-mode #view-toggle-btn{background:#7c3aed}
 body.ou-mode #view-toggle-btn:hover{background:#6d28d9}
 footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
+
+@media (max-width: 900px) {
+  header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 18px 16px;
+    gap: 10px;
+  }
+
+  header > div:first-child {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  header h1 {
+    font-size: 1.45rem;
+  }
+
+  header .subtitle {
+    font-size: 0.88rem;
+  }
+
+  .header-link,
+  .view-toggle-btn,
+  .season-switch-link {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+
+  .season-switch {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .badge {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  header {
+    padding: 14px 12px;
+    gap: 8px;
+  }
+
+  header h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-link,
+  .view-toggle-btn {
+    flex: 1 1 calc(50% - 6px);
+    text-align: center;
+  }
+}

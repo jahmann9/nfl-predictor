@@ -150,3 +150,128 @@ footer {
   color: #94a3b8;
   font-size: 0.8rem;
 }
+
+.hidden {
+  display: none;
+}
+
+.no-margin-top {
+  margin-top: 0;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mt-12 {
+  margin-top: 12px;
+}
+
+.my-14 {
+  margin: 14px 0;
+}
+
+.row-space-between {
+  justify-content: space-between;
+}
+
+.editor-title {
+  margin: 0 0 4px 0;
+}
+
+.lb-result-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.lb-result-hit {
+  background: #14532d;
+  color: #bbf7d0;
+}
+
+.lb-result-miss {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+.lb-result-push {
+  background: #78350f;
+  color: #fde68a;
+}
+
+.lb-result-pending {
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.lb-rate-wrap {
+  margin-top: 10px;
+}
+
+.lb-rate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.lb-rate-header strong {
+  font-size: 14px;
+  color: #e2e8f0;
+  letter-spacing: 0.2px;
+}
+
+.lb-rate-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #1e293b;
+  overflow: hidden;
+}
+
+.lb-rate-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #16a34a, #84cc16);
+}
+
+.lb-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.lb-chip {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.lb-chip-win {
+  background: #14532d;
+  color: #bbf7d0;
+}
+
+.lb-chip-loss {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+.lb-chip-push {
+  background: #78350f;
+  color: #fde68a;
+}
+
+.lb-chip-pending {
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.lb-chip-picks {
+  background: #1e3a8a;
+  color: #bfdbfe;
+}
