@@ -59,6 +59,7 @@
           </label>
           <button id="load-week-btn" class="secondary">Load Week</button>
           <button id="save-week-btn">Save Week</button>
+          <button id="clear-week-btn" class="secondary">Clear Week</button>
         </div>
 
         <div class="table-wrap">
@@ -416,6 +417,34 @@
         msg.innerHTML = "<span class='success'>Saved picks for season " + season + ", week " + week + ".</span>";
       }
 
+      async function clearWeek() {
+        var season = Number(document.getElementById("season-select").value);
+        var week = Number(document.getElementById("week-select").value);
+        var msg = document.getElementById("save-msg");
+
+        var confirmed = window.confirm(
+          "Clear all picks for season " + season + ", week " + week + "? This cannot be undone."
+        );
+        if (!confirmed) {
+          return;
+        }
+
+        msg.textContent = "Clearing week...";
+        var del = await supabaseClient
+          .from("weekly_picks")
+          .delete()
+          .eq("season", season)
+          .eq("week", week);
+
+        if (del.error) {
+          msg.innerHTML = "<span class='error'>Clear error: " + del.error.message + "</span>";
+          return;
+        }
+
+        await loadWeek();
+        msg.innerHTML = "<span class='success'>Cleared all picks for season " + season + ", week " + week + ".</span>";
+      }
+
       async function logout() {
         await supabaseClient.auth.signOut();
         sessionUser = null;
@@ -458,6 +487,7 @@
         document.getElementById("logout-btn").addEventListener("click", logout);
         document.getElementById("load-week-btn").addEventListener("click", loadWeek);
         document.getElementById("save-week-btn").addEventListener("click", saveWeek);
+        document.getElementById("clear-week-btn").addEventListener("click", clearWeek);
         document.getElementById("season-select").addEventListener("change", async function () {
           var season = Number(document.getElementById("season-select").value);
           await weekOptionsFromReport(season);

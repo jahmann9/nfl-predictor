@@ -144,21 +144,52 @@
           return streak;
         }
 
-        window.PEOPLE.forEach(function (name) {
+        var sortedPeople = window.PEOPLE.slice().sort(function (a, b) {
+          var aStats = stats[a] || { hits: 0, misses: 0, pushes: 0, pending: 0, total: 0 };
+          var bStats = stats[b] || { hits: 0, misses: 0, pushes: 0, pending: 0, total: 0 };
+
+          if (bStats.hits !== aStats.hits) return bStats.hits - aStats.hits;
+          if (aStats.misses !== bStats.misses) return aStats.misses - bStats.misses;
+          if (bStats.total !== aStats.total) return bStats.total - aStats.total;
+          return a.localeCompare(b);
+        });
+
+        sortedPeople.forEach(function (name) {
           var s = stats[name];
           var settled = s.hits + s.misses;
-          var pct = settled > 0 ? ((s.hits / settled) * 100).toFixed(1) + "%" : "N/A";
+          var pctNumber = settled > 0 ? (s.hits / settled) * 100 : null;
+          var pct = pctNumber !== null ? pctNumber.toFixed(1) + "%" : "N/A";
           var winStreak = computeCurrentStreak(name, "hit");
           var lossStreak = computeCurrentStreak(name, "miss");
+
+          var barWidth = pctNumber !== null ? Math.max(0, Math.min(100, pctNumber)) : 0;
+          var rateBarHtml =
+            "<div style='margin-top:10px;'>" +
+              "<div style='display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#94a3b8;margin-bottom:6px;'>" +
+                "<span>Hit Rate</span>" +
+                "<strong style='font-size:14px;color:#e2e8f0;letter-spacing:0.2px;'>" + pct + "</strong>" +
+              "</div>" +
+              "<div style='height:8px;border-radius:999px;background:#1e293b;overflow:hidden;'>" +
+                "<div style='height:100%;width:" + barWidth + "%;background:linear-gradient(90deg,#16a34a,#84cc16);'></div>" +
+              "</div>" +
+            "</div>";
+
+          var chipsHtml =
+            "<div style='display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;'>" +
+              "<span style='padding:4px 8px;border-radius:999px;background:#14532d;color:#bbf7d0;font-size:12px;font-weight:700;'>W Streak " + winStreak + "</span>" +
+              "<span style='padding:4px 8px;border-radius:999px;background:#7f1d1d;color:#fecaca;font-size:12px;font-weight:700;'>L Streak " + lossStreak + "</span>" +
+              "<span style='padding:4px 8px;border-radius:999px;background:#78350f;color:#fde68a;font-size:12px;font-weight:700;'>Push " + s.pushes + "</span>" +
+              "<span style='padding:4px 8px;border-radius:999px;background:#334155;color:#cbd5e1;font-size:12px;font-weight:700;'>Pending " + s.pending + "</span>" +
+              "<span style='padding:4px 8px;border-radius:999px;background:#1e3a8a;color:#bfdbfe;font-size:12px;font-weight:700;'>Picks " + s.total + "</span>" +
+            "</div>";
 
           var div = document.createElement("div");
           div.className = "stat";
           div.innerHTML =
             "<div class='name'>" + name + "</div>" +
             "<div class='value'>" + s.hits + "-" + s.misses + "</div>" +
-            "<div class='small'>Hit Rate: " + pct + "</div>" +
-            "<div class='small'>Win Streak: " + winStreak + " | Loss Streak: " + lossStreak + "</div>" +
-            "<div class='small'>Pushes: " + s.pushes + " | Pending: " + s.pending + " | Picks: " + s.total + "</div>";
+            rateBarHtml +
+            chipsHtml;
           grid.appendChild(div);
         });
       }
