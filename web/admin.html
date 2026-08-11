@@ -138,6 +138,18 @@
         return rows;
       }
 
+      function formatSpreadLine(v) {
+        var n = Number(v);
+        if (isNaN(n)) return String(v || "");
+        return (n >= 0 ? "+" : "") + n.toFixed(1);
+      }
+
+      function formatTotalLine(v) {
+        var n = Number(v);
+        if (isNaN(n)) return String(v || "");
+        return n.toFixed(1);
+      }
+
       async function getSeasonReportRows(season) {
         if (seasonReportCache[season]) {
           return seasonReportCache[season];
@@ -162,13 +174,29 @@
         var seen = {};
         var options = [];
         weeklyRows.forEach(function (r) {
-          var pickText = pickType === "spread" ? (r.recommended_pick || "") : (r.ou_pick || "");
-          if (!pickText) return;
-          var key = pickText;
-          if (seen[key]) return;
-          seen[key] = true;
           var matchup = (r.away_team || "?") + " @ " + (r.home_team || "?");
-          options.push({ value: pickText, label: matchup + ": " + pickText });
+          if (pickType === "spread") {
+            var awaySpread = formatSpreadLine(r.away_spread_line);
+            var homeSpread = formatSpreadLine(r.home_spread_line);
+            var spreadChoices = [
+              (r.away_team || "Away") + " to cover (" + awaySpread + ")",
+              (r.home_team || "Home") + " to cover (" + homeSpread + ")"
+            ];
+            spreadChoices.forEach(function (pickText) {
+              if (!pickText || seen[pickText]) return;
+              seen[pickText] = true;
+              options.push({ value: pickText, label: matchup + ": " + pickText });
+            });
+            return;
+          }
+
+          var total = formatTotalLine(r.total_line);
+          var ouChoices = ["Over " + total, "Under " + total];
+          ouChoices.forEach(function (pickText) {
+            if (!pickText || seen[pickText]) return;
+            seen[pickText] = true;
+            options.push({ value: pickText, label: matchup + ": " + pickText });
+          });
         });
         return options;
       }
