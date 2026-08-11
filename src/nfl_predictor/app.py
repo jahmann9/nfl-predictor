@@ -38,7 +38,7 @@ def run() -> None:
     parser.add_argument("--week", type=int, default=None, help="Target prediction week (omit for all weeks)")
     parser.add_argument("--training-years", type=int, default=10, help="How many historical seasons to use")
     parser.add_argument("--rolling-window", type=int, default=5, help="Rolling window for team-form features")
-    parser.add_argument("--output-dir", type=str, default="reports", help="Output directory")
+    parser.add_argument("--output-dir", type=str, default="web/reports", help="Output directory")
     args = parser.parse_args()
 
     current_season, _ = _current_season_week()

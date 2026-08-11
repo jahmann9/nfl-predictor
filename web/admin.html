@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NFL Predictor Admin</title>
+    <link rel="stylesheet" href="app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/supabase-client.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 class="h1">NFL Predictor Admin</h1>
+        <div class="nav">
+          <a href="reports/summaries/season_report_2026.html">Home</a>
+          <a href="leaderboard.html">Leaderboard</a>
+          <a class="active" href="admin.html">Admin</a>
+        </div>
+      </div>
+
+      <div class="card notice" id="config-warning" style="display:none;"></div>
+
+      <div class="card" id="login-card">
+        <h2 style="margin-top:0;">Admin Login</h2>
+        <div class="small">Use your Supabase auth credentials. Only authenticated users can edit picks.</div>
+        <div class="row" style="margin-top:12px;">
+          <label>Email
+            <input type="email" id="email" placeholder="admin@example.com" />
+          </label>
+          <label>Password
+            <input type="password" id="password" placeholder="••••••••" />
+          </label>
+          <button id="login-btn">Log In</button>
+        </div>
+        <div id="login-msg" class="small" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card" id="editor-card" style="display:none;">
+        <div class="row" style="justify-content:space-between;">
+          <div>
+            <h2 style="margin:0 0 4px 0;">Weekly Pick Editor</h2>
+            <div class="small">Assign one spread or one O/U pick per person from the generated season report options for the selected week. Leave "Made Pick" unchecked to skip.</div>
+          </div>
+          <button class="secondary" id="logout-btn">Log Out</button>
+        </div>
+
+        <div class="row" style="margin:14px 0;">
+          <label>Season
+            <select id="season-select">
+              <option>2025</option>
+              <option selected>2026</option>
+            </select>
+          </label>
+          <label>Week
+            <select id="week-select"></select>
+          </label>
+          <button id="load-week-btn" class="secondary">Load Week</button>
+          <button id="save-week-btn">Save Week</button>
+          <button id="clear-week-btn" class="secondary">Clear Week</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Person</th>
+                <th>Made Pick</th>
+                <th>Pick Type</th>
+                <th>Pick (spread or O/U)</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="pick-rows"></tbody>
+          </table>
+        </div>
+
+        <div id="save-msg" class="small" style="margin-top:10px;"></div>
+      </div>
+
+      <footer>Admin changes stream to leaderboard in near real time via Supabase Realtime.</footer>
+    </div>
+
+    <script src="js/admin.js"></script>
+  </body>
+</html>

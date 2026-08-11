@@ -43,10 +43,35 @@ python main.py --season 2026 --training-years 10  # all weeks in season
 ## Outputs
 
 - Season/week predictions CSV:
-  - `reports/summaries/season_report_<season>.csv`
-  - `reports/summaries/season_report_<season>_week_<week>.csv`
-- Visualizations in `reports/figures/`:
+  - `web/reports/summaries/season_report_<season>.csv`
+  - `web/reports/summaries/season_report_<season>_week_<week>.csv`
+- Visualizations in `web/reports/figures/`:
   - `confusion_matrix.png`
   - `spread_cover_distribution.png`
   - `probability_calibration.png`
   - `feature_importance.png`
+
+Override location with `--output-dir` if needed.
+
+## Friend Picks Admin + Live Leaderboard
+
+The hosted site now includes:
+
+- `admin.html`: admin login and weekly pick entry for Jaron, Tom, Dylan, Jordan, Jacob.
+- `leaderboard.html`: live hit/miss records and pick summary table.
+
+Each person can have at most one weekly pick (spread or O/U), and they can be left blank for a week.
+
+### Supabase setup
+
+1. Create a Supabase project.
+  - Project dashboard: https://supabase.com/dashboard/project/jihwtjbppwimdrcukhba
+2. Run SQL from `web/supabase/schema.sql` in the Supabase SQL editor.
+3. In `web/config.js`, set:
+  - `SUPABASE_URL`
+  - `SUPABASE_ANON_KEY`
+4. Create at least one auth user in Supabase Auth (that user will log in via `admin.html`).
+
+### Deploy behavior
+
+The GitHub Pages workflow copies files from `web/` into the published site and validates required report and app files before deployment.
