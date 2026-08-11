@@ -98,6 +98,40 @@
         }
       }
 
+      async function weekOptionsFromReport(season) {
+        var sel = document.getElementById("week-select");
+        var currentValue = sel.value;
+        sel.innerHTML = "";
+        try {
+          var rows = await getSeasonReportRows(season);
+          var seen = {};
+          var weeks = rows
+            .map(function (r) { return Number(r.week); })
+            .filter(function (w) { return !isNaN(w) && w > 0 && !seen[w] && (seen[w] = true); })
+            .sort(function (a, b) { return a - b; });
+
+          if (!weeks.length) {
+            weekOptions();
+            return;
+          }
+
+          weeks.forEach(function (w) {
+            var opt = document.createElement("option");
+            opt.value = String(w);
+            opt.textContent = "Week " + w;
+            sel.appendChild(opt);
+          });
+
+          if (currentValue && weeks.indexOf(Number(currentValue)) >= 0) {
+            sel.value = currentValue;
+          } else {
+            sel.value = String(weeks[0]);
+          }
+        } catch (e) {
+          weekOptions();
+        }
+      }
+
       function parseCsvLine(line) {
         var out = [];
         var cur = "";
@@ -154,10 +188,24 @@
         if (seasonReportCache[season]) {
           return seasonReportCache[season];
         }
-        var path = "reports/summaries/season_report_" + season + ".csv";
-        var res = await fetch(path, { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("Could not load " + path + " (" + res.status + ")");
+        var candidatePaths = [
+          "reports/summaries/season_report_" + season + ".csv",
+          "../reports/summaries/season_report_" + season + ".csv",
+          "/reports/summaries/season_report_" + season + ".csv"
+        ];
+        var res = null;
+        var usedPath = "";
+        for (var i = 0; i < candidatePaths.length; i += 1) {
+          var p = candidatePaths[i];
+          var tryRes = await fetch(p, { cache: "no-store" });
+          if (tryRes.ok) {
+            res = tryRes;
+            usedPath = p;
+            break;
+          }
+        }
+        if (!res) {
+          throw new Error("Could not load season_report_" + season + ".csv from expected paths.");
         }
         var text = await res.text();
         var rows = parseCsv(text).map(function (r) {
@@ -219,6 +267,12 @@
 
         try {
           var options = await getPickOptions(season, week, pickType);
+          if (!options.length) {
+            var none = document.createElement("option");
+            none.value = "";
+            none.textContent = "No report picks available for this week";
+            pickTextEl.appendChild(none);
+          }
           options.forEach(function (opt) {
             var o = document.createElement("option");
             o.value = opt.value;
@@ -271,6 +325,7 @@
                 "<option value='pending' " + (!row || row.result === "pending" ? "selected" : "") + ">Pending</option>" +
                 "<option value='hit' " + (row && row.result === "hit" ? "selected" : "") + ">Hit</option>" +
                 "<option value='miss' " + (row && row.result === "miss" ? "selected" : "") + ">Miss</option>" +
+                "<option value='push' " + (row && row.result === "push" ? "selected" : "") + ">Push</option>" +
               "</select>" +
             "</td>";
           tbody.appendChild(tr);
@@ -403,7 +458,11 @@
         document.getElementById("logout-btn").addEventListener("click", logout);
         document.getElementById("load-week-btn").addEventListener("click", loadWeek);
         document.getElementById("save-week-btn").addEventListener("click", saveWeek);
-        document.getElementById("season-select").addEventListener("change", loadWeek);
+        document.getElementById("season-select").addEventListener("change", async function () {
+          var season = Number(document.getElementById("season-select").value);
+          await weekOptionsFromReport(season);
+          await loadWeek();
+        });
         document.getElementById("week-select").addEventListener("change", loadWeek);
 
         var session = await supabaseClient.auth.getSession();
@@ -412,6 +471,7 @@
           sessionUser = existing;
           document.getElementById("login-card").style.display = "none";
           document.getElementById("editor-card").style.display = "block";
+          await weekOptionsFromReport(Number(document.getElementById("season-select").value));
           await loadWeek();
         }
       }
