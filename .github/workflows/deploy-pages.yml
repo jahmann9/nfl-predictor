@@ -1,0 +1,130 @@
+name: Deploy Reports To GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate reports
+        run: |
+          mkdir -p site/reports
+          python main.py --season 2025 --output-dir site/reports
+          python main.py --season 2026 --output-dir site/reports
+
+      - name: Create index page
+        run: |
+          cat > site/index.html << 'EOF'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <title>NFL Predictor Reports</title>
+              <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 2rem; line-height: 1.5; }
+                h1 { margin-bottom: 0.5rem; }
+                .meta { color: #555; margin-bottom: 1.5rem; }
+                ul { padding-left: 1.2rem; }
+                li { margin: 0.35rem 0; }
+                a { text-decoration: none; }
+                a:hover { text-decoration: underline; }
+              </style>
+            </head>
+            <body>
+              <h1>NFL Predictor Reports</h1>
+              <div class="meta">Published from the latest <code>main</code> merge or manual workflow run.</div>
+
+              <h2>Season Summaries</h2>
+              <ul>
+                <li><a href="reports/summaries/season_report_2025.html">2025 Season Report (HTML)</a></li>
+                <li><a href="reports/summaries/season_report_2025.csv">2025 Season Report (CSV)</a></li>
+                <li><a href="reports/summaries/season_report_2026.html">2026 Season Report (HTML)</a></li>
+                <li><a href="reports/summaries/season_report_2026.csv">2026 Season Report (CSV)</a></li>
+              </ul>
+
+              <h2>Figures</h2>
+              <ul>
+                <li><a href="reports/figures/confusion_matrix.png">Confusion Matrix</a></li>
+                <li><a href="reports/figures/spread_cover_distribution.png">Spread Cover Distribution</a></li>
+                <li><a href="reports/figures/probability_calibration.png">Probability Calibration</a></li>
+                <li><a href="reports/figures/feature_importance.png">Feature Importance</a></li>
+              </ul>
+            </body>
+          </html>
+          EOF
+
+      - name: Validate generated site files
+        run: |
+          required_files=(
+            "site/index.html"
+            "site/reports/summaries/season_report_2025.html"
+            "site/reports/summaries/season_report_2025.csv"
+            "site/reports/summaries/season_report_2026.html"
+            "site/reports/summaries/season_report_2026.csv"
+            "site/reports/figures/confusion_matrix.png"
+            "site/reports/figures/spread_cover_distribution.png"
+            "site/reports/figures/probability_calibration.png"
+            "site/reports/figures/feature_importance.png"
+          )
+
+          missing=0
+          for f in "${required_files[@]}"; do
+            if [[ ! -f "$f" ]]; then
+              echo "Missing required file: $f"
+              missing=1
+            fi
+          done
+
+          if [[ "$missing" -ne 0 ]]; then
+            echo "Site validation failed. One or more required files were not generated."
+            exit 1
+          fi
+
+          echo "Site validation passed."
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
