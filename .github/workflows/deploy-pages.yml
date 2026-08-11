@@ -80,6 +80,35 @@ jobs:
           </html>
           EOF
 
+      - name: Validate generated site files
+        run: |
+          required_files=(
+            "site/index.html"
+            "site/reports/summaries/season_report_2025.html"
+            "site/reports/summaries/season_report_2025.csv"
+            "site/reports/summaries/season_report_2026.html"
+            "site/reports/summaries/season_report_2026.csv"
+            "site/reports/figures/confusion_matrix.png"
+            "site/reports/figures/spread_cover_distribution.png"
+            "site/reports/figures/probability_calibration.png"
+            "site/reports/figures/feature_importance.png"
+          )
+
+          missing=0
+          for f in "${required_files[@]}"; do
+            if [[ ! -f "$f" ]]; then
+              echo "Missing required file: $f"
+              missing=1
+            fi
+          done
+
+          if [[ "$missing" -ne 0 ]]; then
+            echo "Site validation failed. One or more required files were not generated."
+            exit 1
+          fi
+
+          echo "Site validation passed."
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
