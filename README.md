@@ -43,13 +43,15 @@ python main.py --season 2026 --training-years 10  # all weeks in season
 ## Outputs
 
 - Season/week predictions CSV:
-  - `reports/summaries/season_report_<season>.csv`
-  - `reports/summaries/season_report_<season>_week_<week>.csv`
-- Visualizations in `reports/figures/`:
+  - `web/reports/summaries/season_report_<season>.csv`
+  - `web/reports/summaries/season_report_<season>_week_<week>.csv`
+- Visualizations in `web/reports/figures/`:
   - `confusion_matrix.png`
   - `spread_cover_distribution.png`
   - `probability_calibration.png`
   - `feature_importance.png`
+
+Override location with `--output-dir` if needed.
 
 ## Friend Picks Admin + Live Leaderboard
 
