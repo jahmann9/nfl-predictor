@@ -242,113 +242,7 @@ window._matchupData[{idx}] = {{
 """
 
 
-# ── CSS ───────────────────────────────────────────────────────────────────────
-
-_CSS = """
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:#0f0f1a;color:#e5e7eb;min-height:100vh}
-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
-  border-bottom:2px solid #2563eb;padding:24px 32px;display:flex;
-  align-items:center;gap:16px}
-header h1{font-size:1.8rem;font-weight:800;color:#f8fafc}
-header .subtitle{font-size:.95rem;color:#94a3b8;margin-top:4px}
-.badge{background:#2563eb;color:#fff;border-radius:999px;padding:4px 14px;
-  font-size:.78rem;font-weight:700;letter-spacing:.05em;margin-left:auto}
-main{max-width:1280px;margin:0 auto;padding:32px 16px}
-.filter-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 18px;flex-wrap:wrap}
-.filter-label{font-size:.75rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em}
-.filter-select{background:#1a1a2e;border:1px solid #334155;color:#e2e8f0;border-radius:10px;padding:8px 10px;font-weight:700}
-.filter-note{font-size:.72rem;color:#64748b}
-.stats-row{display:flex;gap:16px;margin-bottom:32px;flex-wrap:wrap}
-.stat-box{background:#1a1a2e;border:1px solid #2d2d4e;border-radius:12px;
-  padding:16px 24px;flex:1;min-width:140px}
-.stat-box .label{font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.08em}
-.stat-box .value{font-size:1.5rem;font-weight:800;color:#f8fafc;margin-top:4px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
-.card{background:#1a1a2e;border:1px solid #2d2d4e;border-radius:16px;
-  overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s}
-.card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.55)}
-.card-top{display:flex;justify-content:space-between;padding:10px 14px 0;
-  font-size:.7rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em}
-.matchup{display:flex;align-items:stretch;padding:10px 8px 6px;gap:4px}
-.team-col{flex:1;display:flex;flex-direction:column;align-items:center;
-  gap:4px;padding:8px 4px;border-radius:10px}
-.vs-col{display:flex;align-items:center;justify-content:center;padding:0 6px}
-.at-sign{font-size:1.1rem;color:#475569;font-weight:700}
-.logo{width:68px;height:68px;object-fit:contain}
-.team-abbr{font-size:1.05rem;font-weight:800;color:#f1f5f9}
-.spread{font-size:1.35rem;font-weight:900;letter-spacing:-.02em}
-.prob-num{font-size:.75rem;color:#94a3b8}
-.prob-bar-wrap{display:flex;height:6px;margin:6px 12px 0;border-radius:99px;overflow:hidden}
-.prob-bar-labels{display:flex;justify-content:space-between;
-  padding:4px 12px 8px;font-size:.65rem;color:#64748b}
-.pick-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;flex-wrap:wrap}
-.pick-label{font-size:.6rem;font-weight:900;letter-spacing:.12em;
-  color:rgba(255,255,255,.7);text-transform:uppercase}
-.pick-text{flex:1;font-size:.85rem;font-weight:700;color:#fff}
-.conf-badge{font-size:.63rem;font-weight:700;border-radius:999px;
-  padding:2px 10px;color:#fff;white-space:nowrap}
-.result-banner{display:flex;align-items:center;gap:8px;padding:8px 12px 4px;flex-wrap:wrap}
-.result-chip{font-size:.63rem;font-weight:800;border-radius:999px;padding:2px 10px;color:#fff}
-.result-text{font-size:.72rem;color:#cbd5e1;font-weight:600}
-.score-row{font-size:.72rem;color:#e2e8f0;font-weight:700;padding:2px 12px 6px}
-.click-hint{font-size:.65rem;color:#475569;text-align:center;
-  padding:6px 0 10px;letter-spacing:.04em}
-/* ── MODAL ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);
-  display:none;z-index:1000;align-items:center;justify-content:center;padding:16px}
-.overlay.open{display:flex}
-.modal{background:#1a1a2e;border:1px solid #2d2d4e;border-radius:20px;
-  max-width:760px;width:100%;max-height:92vh;overflow-y:auto;
-  box-shadow:0 24px 80px rgba(0,0,0,.7)}
-.modal-header{display:flex;align-items:center;padding:20px 24px 14px;
-  border-bottom:1px solid #2d2d4e;gap:12px}
-.modal-teams{flex:1;display:flex;align-items:center;justify-content:center;gap:16px}
-.modal-logo{width:56px;height:56px;object-fit:contain}
-.modal-vs{font-size:1rem;color:#475569;font-weight:700;padding:0 4px}
-.modal-team-block{display:flex;flex-direction:column;align-items:center;gap:2px}
-.modal-team-name{font-size:1.1rem;font-weight:800;color:#f1f5f9}
-.modal-spread{font-size:.85rem;font-weight:700}
-.modal-close{background:none;border:none;color:#64748b;font-size:1.4rem;
-  cursor:pointer;padding:4px 8px;border-radius:8px;transition:background .15s}
-.modal-close:hover{background:#2d2d4e;color:#f1f5f9}
-.modal-pick-row{padding:12px 24px;border-bottom:1px solid #2d2d4e;
-  display:flex;align-items:center;gap:10px}
-.modal-pick-label{font-size:.65rem;font-weight:900;letter-spacing:.1em;
-  color:rgba(255,255,255,.6);text-transform:uppercase}
-.modal-pick-text{font-size:.95rem;font-weight:700;color:#fff;flex:1}
-.modal-result-row{padding:10px 24px;border-bottom:1px solid #2d2d4e;display:none;align-items:center;gap:10px}
-.modal-body{padding:20px 24px}
-.section-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:#64748b;margin-bottom:16px}
-.stat-compare{display:flex;flex-direction:column;gap:16px}
-.stat-row{display:flex;flex-direction:column;gap:5px}
-.stat-row-label{font-size:.78rem;color:#94a3b8;text-align:center;margin-bottom:3px}
-.stat-values{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.stat-val{font-size:.95rem;font-weight:700;min-width:64px;text-align:center}
-.stat-val.winner{color:#f1f5f9}
-.stat-val.loser{color:#6b7280}
-.stat-bar-wrap{flex:1;display:flex;height:8px;border-radius:99px;overflow:hidden;background:#2d2d4e}
-.stat-row-footer{display:flex;justify-content:space-between;
-  font-size:.65rem;color:#475569;margin-top:2px}
-.no-stats{color:#475569;font-size:.85rem;text-align:center;padding:24px 0}
-.view-toggle-btn{background:#2563eb;border:none;color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;transition:background .2s}
-.view-toggle-btn:hover{background:#1e40af}
-.header-link{background:#1a1a2e;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:8px 12px;font-size:.82rem;font-weight:700;text-decoration:none}
-.header-link:hover{border-color:#60a5fa;color:#fff}
-.season-switch{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.season-switch-label{font-size:.7rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em}
-.season-switch-link{background:#1a1a2e;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:700;text-decoration:none}
-.season-switch-link:hover{border-color:#60a5fa;color:#fff}
-.season-switch-link.current{background:#2563eb;border-color:#2563eb;color:#fff;pointer-events:none}
-.ou-banner{display:flex;align-items:center;gap:6px}
-body.ou-mode .card .pick-banner{display:none}
-body.ou-mode .card .ou-banner{display:flex!important}
-body.ou-mode #view-toggle-btn{background:#7c3aed}
-body.ou-mode #view-toggle-btn:hover{background:#6d28d9}
-footer{text-align:center;padding:32px;color:#374151;font-size:.78rem}
-"""
+# Report styles now live in web/report.css and are linked from generated HTML.
 
 # ── JavaScript ────────────────────────────────────────────────────────────────
 
@@ -636,7 +530,7 @@ def generate_weekly_html(
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>NFL Predictor &middot; {season} {title_scope}</title>
-  <style>{_CSS}</style>
+  <link rel="stylesheet" href="../../report.css">
 </head>
 <body>
 <header>
