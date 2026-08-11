@@ -335,6 +335,11 @@ main{max-width:1280px;margin:0 auto;padding:32px 16px}
 .no-stats{color:#475569;font-size:.85rem;text-align:center;padding:24px 0}
 .view-toggle-btn{background:#2563eb;border:none;color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;transition:background .2s}
 .view-toggle-btn:hover{background:#1e40af}
+.season-switch{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.season-switch-label{font-size:.7rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em}
+.season-switch-link{background:#1a1a2e;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:700;text-decoration:none}
+.season-switch-link:hover{border-color:#60a5fa;color:#fff}
+.season-switch-link.current{background:#2563eb;border-color:#2563eb;color:#fff;pointer-events:none}
 .ou-banner{display:flex;align-items:center;gap:6px}
 body.ou-mode .card .pick-banner{display:none}
 body.ou-mode .card .ou-banner{display:flex!important}
@@ -604,6 +609,24 @@ def generate_weekly_html(
 
     cards = "".join(_card_html(i, row) for i, (_, row) in enumerate(picks.iterrows()))
     title_scope = f"Week {week}" if week is not None else "All Weeks"
+    season_switch_html = ""
+    if week is None:
+        season_links = [2025, 2026]
+        season_anchor_html = "".join(
+            [
+                (
+                    f'<a class="season-switch-link current" href="season_report_{s}.html">{s}</a>'
+                    if s == season
+                    else f'<a class="season-switch-link" href="season_report_{s}.html">{s}</a>'
+                )
+                for s in season_links
+            ]
+        )
+        season_switch_html = f"""
+  <div class="season-switch" aria-label="Season switcher">
+    <span class="season-switch-label">Season</span>
+    {season_anchor_html}
+  </div>"""
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -620,6 +643,7 @@ def generate_weekly_html(
     <div class="subtitle"><span id="view-mode-label">Against the Spread</span> &middot; {season} Season</div>
   </div>
   <button id="view-toggle-btn" class="view-toggle-btn" onclick="toggleViewMode()">Show O/U</button>
+  {season_switch_html}
   <div class="badge">EPA &middot; Pace &middot; Rest &middot; ATS Form</div>
 </header>
 <main>
