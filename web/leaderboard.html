@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NFL Predictor Leaderboard</title>
+    <link rel="stylesheet" href="app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/supabase-client.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 class="h1">Friend Pick Leaderboard</h1>
+        <div class="nav">
+          <a href="index.html">Home</a>
+          <a class="active" href="leaderboard.html">Leaderboard</a>
+          <a href="admin.html">Admin</a>
+        </div>
+      </div>
+
+      <div class="card notice" id="config-warning" style="display:none;"></div>
+
+      <div class="card">
+        <div class="row">
+          <label>Season
+            <select id="season-select">
+              <option value="all">All</option>
+              <option>2025</option>
+              <option selected>2026</option>
+            </select>
+          </label>
+          <label>Week
+            <select id="week-select">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <button id="refresh-btn" class="secondary">Refresh</button>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="stats-grid"></div>
+
+      <div class="card">
+        <h2 style="margin-top:0;">Pick Summary</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Season</th>
+                <th>Week</th>
+                <th>Person</th>
+                <th>Type</th>
+                <th>Pick</th>
+                <th>Result</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="summary-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <footer>Live updates are powered by Supabase Realtime.</footer>
+    </div>
+
+    <script>
+      var supabaseClient;
+      var allRows = [];
+
+      function weekOptions() {
+        var sel = document.getElementById("week-select");
+        sel.innerHTML = "<option value='all'>All</option>";
+        for (var i = 1; i <= 22; i += 1) {
+          var opt = document.createElement("option");
+          opt.value = String(i);
+          opt.textContent = "Week " + i;
+          sel.appendChild(opt);
+        }
+      }
+
+      function filterRows() {
+        var season = document.getElementById("season-select").value;
+        var week = document.getElementById("week-select").value;
+        return allRows.filter(function (r) {
+          var seasonOk = season === "all" || String(r.season) === season;
+          var weekOk = week === "all" || String(r.week) === week;
+          return seasonOk && weekOk;
+        });
+      }
+
+      function renderStats(rows) {
+        var stats = {};
+        window.PEOPLE.forEach(function (name) {
+          stats[name] = { hits: 0, misses: 0, pending: 0, total: 0 };
+        });
+
+        rows.forEach(function (r) {
+          if (!stats[r.person]) return;
+          stats[r.person].total += 1;
+          if (r.result === "hit") stats[r.person].hits += 1;
+          else if (r.result === "miss") stats[r.person].misses += 1;
+          else stats[r.person].pending += 1;
+        });
+
+        var grid = document.getElementById("stats-grid");
+        grid.innerHTML = "";
+
+        window.PEOPLE.forEach(function (name) {
+          var s = stats[name];
+          var settled = s.hits + s.misses;
+          var pct = settled > 0 ? ((s.hits / settled) * 100).toFixed(1) + "%" : "N/A";
+
+          var div = document.createElement("div");
+          div.className = "stat";
+          div.innerHTML =
+            "<div class='name'>" + name + "</div>" +
+            "<div class='value'>" + s.hits + "-" + s.misses + "</div>" +
+            "<div class='small'>Hit Rate: " + pct + "</div>" +
+            "<div class='small'>Pending: " + s.pending + " | Picks: " + s.total + "</div>";
+          grid.appendChild(div);
+        });
+      }
+
+      function renderSummary(rows) {
+        var tbody = document.getElementById("summary-rows");
+        tbody.innerHTML = "";
+
+        rows
+          .slice()
+          .sort(function (a, b) {
+            if (a.season !== b.season) return b.season - a.season;
+            if (a.week !== b.week) return b.week - a.week;
+            return a.person.localeCompare(b.person);
+          })
+          .forEach(function (r) {
+            var tr = document.createElement("tr");
+            tr.innerHTML =
+              "<td>" + r.season + "</td>" +
+              "<td>" + r.week + "</td>" +
+              "<td>" + r.person + "</td>" +
+              "<td>" + (r.pick_type === "ou" ? "O/U" : "Spread") + "</td>" +
+              "<td>" + (r.pick_text || "") + "</td>" +
+              "<td>" + r.result + "</td>" +
+              "<td>" + new Date(r.updated_at).toLocaleString() + "</td>";
+            tbody.appendChild(tr);
+          });
+      }
+
+      function rerender() {
+        var rows = filterRows();
+        renderStats(rows);
+        renderSummary(rows);
+      }
+
+      async function loadData() {
+        var res = await supabaseClient.from("weekly_picks").select("*");
+        if (res.error) {
+          document.getElementById("config-warning").style.display = "block";
+          document.getElementById("config-warning").textContent = "Load error: " + res.error.message;
+          return;
+        }
+        allRows = res.data || [];
+        rerender();
+      }
+
+      async function boot() {
+        try {
+          supabaseClient = window.createSupabaseClient();
+        } catch (e) {
+          var warning = document.getElementById("config-warning");
+          warning.style.display = "block";
+          warning.textContent = e.message;
+          return;
+        }
+
+        weekOptions();
+        document.getElementById("refresh-btn").addEventListener("click", loadData);
+        document.getElementById("season-select").addEventListener("change", rerender);
+        document.getElementById("week-select").addEventListener("change", rerender);
+
+        await loadData();
+
+        supabaseClient
+          .channel("weekly_picks_changes")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "weekly_picks" },
+            function () {
+              loadData();
+            }
+          )
+          .subscribe();
+      }
+
+      boot();
+    </script>
+  </body>
+</html>

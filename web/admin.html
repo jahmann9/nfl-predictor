@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NFL Predictor Admin</title>
+    <link rel="stylesheet" href="app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="js/constants.js"></script>
+    <script src="js/supabase-client.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 class="h1">NFL Predictor Admin</h1>
+        <div class="nav">
+          <a href="index.html">Home</a>
+          <a href="leaderboard.html">Leaderboard</a>
+          <a class="active" href="admin.html">Admin</a>
+        </div>
+      </div>
+
+      <div class="card notice" id="config-warning" style="display:none;"></div>
+
+      <div class="card" id="login-card">
+        <h2 style="margin-top:0;">Admin Login</h2>
+        <div class="small">Use your Supabase auth credentials. Only authenticated users can edit picks.</div>
+        <div class="row" style="margin-top:12px;">
+          <label>Email
+            <input type="email" id="email" placeholder="admin@example.com" />
+          </label>
+          <label>Password
+            <input type="password" id="password" placeholder="••••••••" />
+          </label>
+          <button id="login-btn">Log In</button>
+        </div>
+        <div id="login-msg" class="small" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card" id="editor-card" style="display:none;">
+        <div class="row" style="justify-content:space-between;">
+          <div>
+            <h2 style="margin:0 0 4px 0;">Weekly Pick Editor</h2>
+            <div class="small">Enter one spread or one O/U pick per person. Leave "Made Pick" unchecked to skip.</div>
+          </div>
+          <button class="secondary" id="logout-btn">Log Out</button>
+        </div>
+
+        <div class="row" style="margin:14px 0;">
+          <label>Season
+            <select id="season-select">
+              <option>2025</option>
+              <option selected>2026</option>
+            </select>
+          </label>
+          <label>Week
+            <select id="week-select"></select>
+          </label>
+          <button id="load-week-btn" class="secondary">Load Week</button>
+          <button id="save-week-btn">Save Week</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Person</th>
+                <th>Made Pick</th>
+                <th>Pick Type</th>
+                <th>Pick (spread or O/U)</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="pick-rows"></tbody>
+          </table>
+        </div>
+
+        <div id="save-msg" class="small" style="margin-top:10px;"></div>
+      </div>
+
+      <footer>Admin changes stream to leaderboard in near real time via Supabase Realtime.</footer>
+    </div>
+
+    <script>
+      var supabaseClient;
+      var sessionUser = null;
+
+      function weekOptions() {
+        var sel = document.getElementById("week-select");
+        sel.innerHTML = "";
+        for (var i = 1; i <= 22; i += 1) {
+          var opt = document.createElement("option");
+          opt.value = String(i);
+          opt.textContent = "Week " + i;
+          sel.appendChild(opt);
+        }
+      }
+
+      function renderRows(existing) {
+        var tbody = document.getElementById("pick-rows");
+        tbody.innerHTML = "";
+        var byPerson = {};
+        existing.forEach(function (r) {
+          byPerson[r.person] = r;
+        });
+
+        window.PEOPLE.forEach(function (name) {
+          var row = byPerson[name] || null;
+          var tr = document.createElement("tr");
+          tr.innerHTML =
+            "<td>" + name + "</td>" +
+            "<td><input type='checkbox' data-role='enabled' data-person='" + name + "' " + (row ? "checked" : "") + " /></td>" +
+            "<td>" +
+              "<select data-role='pick-type' data-person='" + name + "'>" +
+                "<option value='spread' " + (row && row.pick_type === "spread" ? "selected" : "") + ">Spread</option>" +
+                "<option value='ou' " + (row && row.pick_type === "ou" ? "selected" : "") + ">Over/Under</option>" +
+              "</select>" +
+            "</td>" +
+            "<td><input type='text' data-role='pick-text' data-person='" + name + "' placeholder='e.g. BUF -3.5 or Over 47.5' value='" + (row ? (row.pick_text || "") : "") + "' /></td>" +
+            "<td>" +
+              "<select data-role='result' data-person='" + name + "'>" +
+                "<option value='pending' " + (!row || row.result === "pending" ? "selected" : "") + ">Pending</option>" +
+                "<option value='hit' " + (row && row.result === "hit" ? "selected" : "") + ">Hit</option>" +
+                "<option value='miss' " + (row && row.result === "miss" ? "selected" : "") + ">Miss</option>" +
+              "</select>" +
+            "</td>";
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function loadWeek() {
+        var season = Number(document.getElementById("season-select").value);
+        var week = Number(document.getElementById("week-select").value);
+        var res = await supabaseClient
+          .from("weekly_picks")
+          .select("*")
+          .eq("season", season)
+          .eq("week", week);
+
+        if (res.error) {
+          document.getElementById("save-msg").innerHTML = "<span class='error'>Load error: " + res.error.message + "</span>";
+          return;
+        }
+        renderRows(res.data || []);
+        document.getElementById("save-msg").innerHTML = "<span class='small'>Loaded picks for season " + season + ", week " + week + ".</span>";
+      }
+
+      function valueFor(person, role) {
+        var el = document.querySelector("[data-role='" + role + "'][data-person='" + person + "']");
+        return el;
+      }
+
+      async function saveWeek() {
+        var season = Number(document.getElementById("season-select").value);
+        var week = Number(document.getElementById("week-select").value);
+        var msg = document.getElementById("save-msg");
+        msg.textContent = "Saving...";
+
+        for (var i = 0; i < window.PEOPLE.length; i += 1) {
+          var person = window.PEOPLE[i];
+          var enabled = valueFor(person, "enabled").checked;
+          var pickType = valueFor(person, "pick-type").value;
+          var pickText = valueFor(person, "pick-text").value.trim();
+          var result = valueFor(person, "result").value;
+
+          if (!enabled || !pickText) {
+            var del = await supabaseClient
+              .from("weekly_picks")
+              .delete()
+              .eq("season", season)
+              .eq("week", week)
+              .eq("person", person);
+            if (del.error) {
+              msg.innerHTML = "<span class='error'>Delete error for " + person + ": " + del.error.message + "</span>";
+              return;
+            }
+            continue;
+          }
+
+          var up = await supabaseClient
+            .from("weekly_picks")
+            .upsert(
+              {
+                season: season,
+                week: week,
+                person: person,
+                pick_type: pickType,
+                pick_text: pickText,
+                result: result
+              },
+              { onConflict: "season,week,person" }
+            );
+
+          if (up.error) {
+            msg.innerHTML = "<span class='error'>Save error for " + person + ": " + up.error.message + "</span>";
+            return;
+          }
+        }
+
+        msg.innerHTML = "<span class='success'>Saved picks for season " + season + ", week " + week + ".</span>";
+      }
+
+      async function logout() {
+        await supabaseClient.auth.signOut();
+        sessionUser = null;
+        document.getElementById("editor-card").style.display = "none";
+        document.getElementById("login-card").style.display = "block";
+      }
+
+      async function login() {
+        var email = document.getElementById("email").value.trim();
+        var password = document.getElementById("password").value;
+        var msg = document.getElementById("login-msg");
+        msg.textContent = "Logging in...";
+
+        var res = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+        if (res.error) {
+          msg.innerHTML = "<span class='error'>" + res.error.message + "</span>";
+          return;
+        }
+
+        sessionUser = res.data.user;
+        msg.innerHTML = "<span class='success'>Logged in.</span>";
+        document.getElementById("login-card").style.display = "none";
+        document.getElementById("editor-card").style.display = "block";
+        await loadWeek();
+      }
+
+      async function boot() {
+        try {
+          supabaseClient = window.createSupabaseClient();
+        } catch (e) {
+          var warning = document.getElementById("config-warning");
+          warning.style.display = "block";
+          warning.textContent = e.message;
+          return;
+        }
+
+        weekOptions();
+        document.getElementById("week-select").value = "1";
+        document.getElementById("login-btn").addEventListener("click", login);
+        document.getElementById("logout-btn").addEventListener("click", logout);
+        document.getElementById("load-week-btn").addEventListener("click", loadWeek);
+        document.getElementById("save-week-btn").addEventListener("click", saveWeek);
+
+        var session = await supabaseClient.auth.getSession();
+        var existing = session.data && session.data.session ? session.data.session.user : null;
+        if (existing) {
+          sessionUser = existing;
+          document.getElementById("login-card").style.display = "none";
+          document.getElementById("editor-card").style.display = "block";
+          await loadWeek();
+        }
+      }
+
+      boot();
+    </script>
+  </body>
+</html>

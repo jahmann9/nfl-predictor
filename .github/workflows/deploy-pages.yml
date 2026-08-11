@@ -38,6 +38,10 @@ jobs:
           python main.py --season 2025 --output-dir site/reports
           python main.py --season 2026 --output-dir site/reports
 
+      - name: Copy web app assets
+        run: |
+          cp -R web/* site/
+
       - name: Create index page
         run: |
           cat > site/index.html << 'EOF'
@@ -69,6 +73,12 @@ jobs:
                 <li><a href="reports/summaries/season_report_2026.csv">2026 Season Report (CSV)</a></li>
               </ul>
 
+              <h2>Friend Picks</h2>
+              <ul>
+                <li><a href="leaderboard.html">Live Leaderboard & Pick Summary</a></li>
+                <li><a href="admin.html">Admin Login & Weekly Pick Entry</a></li>
+              </ul>
+
               <h2>Figures</h2>
               <ul>
                 <li><a href="reports/figures/confusion_matrix.png">Confusion Matrix</a></li>
@@ -84,6 +94,9 @@ jobs:
         run: |
           required_files=(
             "site/index.html"
+            "site/admin.html"
+            "site/leaderboard.html"
+            "site/config.js"
             "site/reports/summaries/season_report_2025.html"
             "site/reports/summaries/season_report_2025.csv"
             "site/reports/summaries/season_report_2026.html"
