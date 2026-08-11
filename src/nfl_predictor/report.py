@@ -335,6 +335,8 @@ main{max-width:1280px;margin:0 auto;padding:32px 16px}
 .no-stats{color:#475569;font-size:.85rem;text-align:center;padding:24px 0}
 .view-toggle-btn{background:#2563eb;border:none;color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;transition:background .2s}
 .view-toggle-btn:hover{background:#1e40af}
+.header-link{background:#1a1a2e;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:8px 12px;font-size:.82rem;font-weight:700;text-decoration:none}
+.header-link:hover{border-color:#60a5fa;color:#fff}
 .season-switch{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .season-switch-label{font-size:.7rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em}
 .season-switch-link{background:#1a1a2e;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:700;text-decoration:none}
@@ -642,6 +644,8 @@ def generate_weekly_html(
     <h1>&#127944; NFL Predictor</h1>
     <div class="subtitle"><span id="view-mode-label">Against the Spread</span> &middot; {season} Season</div>
   </div>
+  <a class="header-link" href="season_report_2026.html">Home</a>
+  <a class="header-link" href="../../leaderboard.html">Leaderboard</a>
   <button id="view-toggle-btn" class="view-toggle-btn" onclick="toggleViewMode()">Show O/U</button>
   {season_switch_html}
   <div class="badge">EPA &middot; Pace &middot; Rest &middot; ATS Form</div>
