@@ -6,7 +6,7 @@ create table if not exists public.weekly_picks (
   id uuid primary key default gen_random_uuid(),
   season integer not null check (season >= 2020),
   week integer not null check (week between 1 and 22),
-  person text not null check (person in ('Jaron', 'Tom', 'Dylan', 'Jordan', 'Jacob')),
+  person text not null check (person in ('Jaron', 'Tom', 'Dylan', 'Jordan', 'Jacob', 'BotUser')),
   pick_type text not null check (pick_type in ('spread', 'ou')),
   pick_text text not null,
   result text not null default 'pending' check (result in ('pending', 'hit', 'miss', 'push')),
@@ -38,7 +38,7 @@ alter table public.weekly_picks
 alter table public.weekly_picks
   add constraint weekly_picks_result_check check (result in ('pending', 'hit', 'miss', 'push')),
   add constraint weekly_picks_pick_type_check check (pick_type in ('spread', 'ou')),
-  add constraint weekly_picks_person_check check (person in ('Jaron', 'Tom', 'Dylan', 'Jordan', 'Jacob'));
+  add constraint weekly_picks_person_check check (person in ('Jaron', 'Tom', 'Dylan', 'Jordan', 'Jacob', 'BotUser'));
 
 create or replace function public.set_updated_at()
 returns trigger as $$
