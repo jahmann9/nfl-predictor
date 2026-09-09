@@ -154,9 +154,10 @@ async function getPickOptions(season, week, pickType) {
     var total = formatTotalLine(r.total_line);
     var ouChoices = ["Over " + total, "Under " + total];
     ouChoices.forEach(function (pickText) {
-      if (!pickText || seen[pickText]) return;
-      seen[pickText] = true;
-      options.push({ value: pickText, label: matchup + ": " + pickText });
+      var label = matchup + ": " + pickText;
+      if (!pickText || seen[label]) return;
+      seen[label] = true;
+      options.push({ value: pickText, label: label });
     });
   });
   return options;
