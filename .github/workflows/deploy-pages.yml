@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -36,12 +36,22 @@ jobs:
 
       - name: Generate reports
         run: |
-          mkdir -p site/reports
-          python main.py --season 2025 --output-dir site/reports
-          python main.py --season 2026 --output-dir site/reports
+          # Write to web/reports so the freeze logic can read the existing CSVs
+          # and lock in confidence percentages for already-completed games.
+          python main.py --season 2025 --output-dir web/reports
+          python main.py --season 2026 --output-dir web/reports
+
+      - name: Commit updated prediction CSVs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/reports/summaries/*.csv
+          git diff --cached --quiet || git commit -m "chore: update prediction CSVs [skip ci]"
+          git push
 
       - name: Copy web app assets
         run: |
+          mkdir -p site
           cp -R web/* site/
 
       - name: Create index page
