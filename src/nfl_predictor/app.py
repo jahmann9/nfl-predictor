@@ -256,6 +256,68 @@ def run() -> None:
             np.nan,
         )
 
+        # Freeze probabilities for already-completed games so historical confidence
+        # scores never change once a game has been played.  Future-game predictions
+        # still update every model run.
+        _csv_name = (
+            f"season_report_{target_season}.csv"
+            if target_week is None
+            else f"season_report_{target_season}_week_{target_week}.csv"
+        )
+        _freeze_path = pred_dir / _csv_name
+        if _freeze_path.exists() and completed_mask.any():
+            try:
+                _old = pd.read_csv(_freeze_path)
+                _key_cols = ["season", "week", "away_team", "home_team"]
+                if all(c in _old.columns for c in _key_cols):
+                    _old["_gk"] = _old[_key_cols].astype(str).agg("_".join, axis=1)
+                    _spread_freeze = _old.set_index("_gk")["pred_prob_home_cover"].dropna().to_dict()
+                    _ou_freeze = (
+                        _old.set_index("_gk")["pred_prob_total_over"].dropna().to_dict()
+                        if "pred_prob_total_over" in _old.columns
+                        else {}
+                    )
+                    picks_scope["_gk"] = picks_scope[_key_cols].astype(str).agg("_".join, axis=1)
+                    for _i in picks_scope[completed_mask].index:
+                        _k = picks_scope.at[_i, "_gk"]
+                        if _k in _spread_freeze:
+                            _p = float(_spread_freeze[_k])
+                            picks_scope.at[_i, "pred_prob_home_cover"] = _p
+                            picks_scope.at[_i, "pred_home_covers"] = int(_p >= 0.5)
+                            picks_scope.at[_i, "recommended_pick"] = _pick_text(
+                                home_team=picks_scope.at[_i, "home_team"],
+                                away_team=picks_scope.at[_i, "away_team"],
+                                home_spread_line=float(picks_scope.at[_i, "home_spread_line"]),
+                                prob_home_cover=_p,
+                            )
+                        if _k in _ou_freeze:
+                            _op = float(_ou_freeze[_k])
+                            picks_scope.at[_i, "pred_prob_total_over"] = _op
+                            picks_scope.at[_i, "pred_total_over"] = int(_op >= 0.5)
+                            if "total_line" in picks_scope.columns and pd.notna(picks_scope.at[_i, "total_line"]):
+                                picks_scope.at[_i, "ou_pick"] = (
+                                    f"Over {float(picks_scope.at[_i, 'total_line']):.1f}"
+                                    if _op >= 0.5
+                                    else f"Under {float(picks_scope.at[_i, 'total_line']):.1f}"
+                                )
+                    picks_scope.drop(columns=["_gk"], inplace=True)
+                    # Recompute correctness from the now-frozen predictions.
+                    picks_scope["was_correct"] = np.where(
+                        completed_mask,
+                        picks_scope["pred_home_covers"] == picks_scope["actual_home_covers"],
+                        np.nan,
+                    )
+                    if "total_points" in picks_scope.columns:
+                        picks_scope["was_correct_ou"] = np.where(
+                            completed_mask,
+                            picks_scope["pred_total_over"] == picks_scope["actual_total_over"],
+                            np.nan,
+                        )
+                    frozen = int(completed_mask.sum())
+                    print(f"Froze confidence probabilities for {frozen} completed game(s).")
+            except Exception as _e:
+                print(f"Warning: could not freeze historical probabilities: {_e}")
+
         picks = _build_export_frame(picks_scope)
 
         if target_week is None:
