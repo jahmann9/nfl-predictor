@@ -5,5 +5,7 @@ __pycache__/
 venv/
 .env
 .DS_Store
-reports/
-web/reports/
+# Track only prediction CSVs in web/reports so the freeze logic can read them
+# on the next run.  Generated HTML and figures are rebuilt every run.
+web/reports/figures/
+web/reports/summaries/*.html
